@@ -1,0 +1,75 @@
+<window id="mainWindow" width="100%" height="100%" border="normal" title="Libapp Builder" use="org.libx.libappdatabase.MainWindowController" xmlns:a="http://www.zkoss.org/2005/zk/annotation" xmlns:html="http://www.w3.org/1999/xhtml">
+<zscript>
+    import org.libx.libappdatabase.*;
+</zscript>
+<borderlayout height="100%">
+  <west size="33%">
+    <borderlayout height="100%" >
+      <north title="Package Tree" flex="true" size="60%">
+        <tree id="packageTree" height="100%" use="org.libx.libappdatabase.PackageTreeController">
+            <treecols>
+                <treecol label="Name" />
+                <treecol label="Type" width="62px" />
+            </treecols>
+        </tree>
+      </north>
+      <south title="Workspace" flex="true" size="40%">
+        <tree id="workspaceTree" height="100%" use="org.libx.libappdatabase.PackageTreeController">
+            <treecols>
+                <treecol label="Name" />
+                <treecol label="Type" width="62px" />
+            </treecols>
+        </tree>
+      </south>
+    </borderlayout>
+  </west>
+  <center title="Edit Area" autoscroll="true">
+    <vbox id="formFields" hflex="1" style="padding:10px" use="org.libx.libappdatabase.FormFieldsController" visible="false">
+      <button id="dumpcurrenttree" label="Dump Current Tree To Log">
+        <attribute name="onClick">
+            System.out.println("Current package tree: " + Utils.xmlToString(packageTree.getModel().getRootNode()));
+        </attribute>
+      </button>
+      <html:div>
+      Currently viewing id: <a:bind value="entrydisplay.activeEntryId" /><label />
+      </html:div>
+      <vbox hflex="1">
+          <html:div>
+	      	  This <a:bind value="entrydisplay.activeEntryType" /><label id = "entryType" /> was last updated on 
+	          <a:bind value="entrydisplay.activeEntryLastUpdated" /><label id="entryLastUpdated" />
+	      </html:div>
+	      <html:button id="publish">
+	          Publish
+	      </html:button>
+          <grid hflex="1">
+              <columns>
+                  <column label="Field" hflex="1" />
+                  <column label="Value" hflex="4" />
+              </columns>
+              <rows id="xmlEditor" />
+          </grid>
+          <vbox hflex="1" id="xmlFields" />
+      </vbox>
+    </vbox>
+  </center>
+</borderlayout>
+<zscript>
+    // trick BaseX into reading its configuration from the WEB-INF directory
+    // by temporarily redirecting user.home property.
+    org.libx.libappdatabase.InitializeBaseX.initializeInZK();
+
+    XMLDataModel xmlModel = null;
+    try {
+        xmlModel = new XMLDataModel();
+    } catch (Exception e) {
+        Utils.alert("Database connection could not be established");
+        return;
+    }
+    formFields.initialize(xmlModel, xmlEditor, xmlFields);
+    formFields.registerWithTreeController(packageTree);
+    formFields.registerWithTreeController(workspaceTree);
+    clipboard = new org.libx.libappdatabase.TreeController.Clipboard();
+    packageTree.initialize(mainWindow, xmlModel, "libx2_feed", clipboard);
+    workspaceTree.initialize(mainWindow, xmlModel, "libx2_work", clipboard);
+</zscript>
+</window>

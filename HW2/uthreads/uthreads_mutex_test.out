@@ -1,0 +1,11 @@
+Creating t1
+Running thread 1
+Creating t2
+Running thread 2
+Join 1
+Locked lock 1 thread 1
+Locked lock 2 thread 1
+Join 2
+Locked lock 1 thread 2
+Locked lock 2 thread 2
+Done

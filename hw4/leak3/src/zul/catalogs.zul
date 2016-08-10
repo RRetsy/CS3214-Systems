@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml" xmlns:js="http://www.zkoss.org/2005/zk/client">
+	<vbox hflex="1" sclass="mainbox">
+        <!-- zk hidden 'a' components are created here. When user clicks a visible html link, 
+        client side javascript fires the event on the corresponding hidden 'a' component' and
+        starts java code for probing on server -->
+	    <a href="javascript:;" visible="false" id="probeaddison">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("addison.vt.edu", "");
+            </attribute>
+        </a>
+
+        <a href="javascript:;" visible="false" id="probeworldcat">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("worldcat.org", "");
+            </attribute>
+        </a>
+
+        <a href="javascript:;" visible="false" id="probeciteulike">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("www.citeulike.org", "");
+            </attribute>
+        </a>
+
+        <a href="javascript:;" visible="false" id="probepubmed">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("pubmed.gov", "");
+            </attribute>
+        </a>
+
+        <a href="javascript:;" visible="false" id="probehubmed">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("hubmed.org", "");
+            </attribute>
+        </a>
+
+        <a href="javascript:;" visible="false" id="probewiki">
+            <attribute name="onClick">
+                catalogUrl.startCatalogDetection("http://en.wikipedia.org/wiki/Main_Page", "");
+            </attribute>
+        </a>
+
+		<hbox hflex="1" sclass="level1box">
+  			Configure the catalogs and databases that are included in your edition.
+	    	LibX can try to auto-detect your catalog.  It will also cross-check
+    		other editions to see if a particular catalog has already been configured.
+	  		To change the order in which catalogs appear in your edition, 
+    	  	drag and drop each catalog's entry in the desired position.
+	    </hbox>
+
+	    <hbox hflex="1" id="catalogsTabController" use="org.libx.editionbuilder.CatalogsTabController"
+	    	style="table-layout:fixed">	
+	    	<hbox hflex="1">
+		        <vbox hflex="2">
+		    		<vbox hflex="1" sclass="level2box">
+	    	    		<html:div width="100%" sclass="leavemargin">
+	                        <html:b>Auto Detection:</html:b>
+	                        enter the <html:a href="http://en.wikipedia.org/wiki/Hostname" target="_new">host name</html:a> 
+	                        of the machine that runs your library catalog, or enter a
+	                        <html:a href="http://en.wikipedia.org/wiki/Uniform_Resource_Locator" target="_new">URL</html:a> 
+	                        to a page that contains a search form.
+	                        For instance, try 
+	                        <html:a href="javascript:;" onclick="fireClick('probeaddison')">
+                                addison.vt.edu,
+                            </html:a>
+                            <html:span>&amp;nbsp;</html:span>
+                            <html:a href="javascript:;" onclick="fireClick('probeworldcat')">
+                                worldcat.org,
+                            </html:a>
+                            <html:span>&amp;nbsp;</html:span>
+                            <html:a href="javascript:;" onclick="fireClick('probeciteulike')">
+                            	citeulike.org,
+                            </html:a>
+                            <html:span>&amp;nbsp;</html:span>
+                            <html:a href="javascript:;" onclick="fireClick('probepubmed')">
+                            	pubmed.gov,
+                            </html:a>
+                            <html:span>&amp;nbsp;</html:span>
+                            <html:a href="javascript:;" onclick="fireClick('probehubmed')">
+                            	hubmed.org,
+                            </html:a> or complete URLs such as
+                            <html:a href="javascript:;" onclick="fireClick('probewiki')">
+                            	http://en.wikipedia.org/wiki/Main_Page
+                            </html:a>
+	        	    	</html:div>
+	       		    	<vbox hflex="1" 
+	              	    	id="catalogUrl" use="org.libx.editionbuilder.CatalogsTabController$Urlbox" />
+	                </vbox>
+
+		            <separator />
+	                <vbox hflex="1" sclass="level2box">
+	                     <html:div sclass="leavemargin">
+	                        <html:b>Manual Configuration:</html:b>
+	                         Select a supported catalog type below and choose "Add Catalog."
+	                     </html:div>
+	 	                 <hbox hflex="1">
+		                    <combobox readonly="true" id="catalogChoice">
+		                        <comboitem value="millenium"       label="III Millennium" />
+	        		            <comboitem value="sirsi"           label="Sirsi" />
+	    	    		        <comboitem value="aleph"           label="Ex Libris Aleph" />
+	        		    	    <comboitem value="voyager"         label="Voyager" />
+	        		    	    <comboitem value="voyager7"        label="Voyager 7.0" />
+	         		         	<comboitem value="horizon"         label="Horizon iPac" />
+	        			        <comboitem value="centralsearch"   label="Serials Solutions Central Search" />
+	                			<comboitem value="sersol"          label="Serials Solutions Journal List" />
+	        	      	        <comboitem value="sfx"             label="SFX Journal List" />
+	                      		<comboitem value="bookmarklet"     label="Bookmarklet (URL Template)" />
+	                	    	<comboitem value="scholar"         label="Google Scholar" />
+	                    		<comboitem value="openurlresolver" label="OpenURL Resolver" />
+	                            <comboitem value="web2"            label="Web2" />
+	                            <comboitem value="evergreen"       label="Evergreen" />
+	                            <comboitem value="vubis"           label="Vubis" />
+	                            <comboitem value="talisprism"      label="TalisPrism" />
+	                            <comboitem value="polaris"         label="Polaris" />
+	                            <comboitem value="worldcat"        label="Worldcat or Worldcat Local" />
+	                            <comboitem value="primo"           label="Ex Libris Primo" />
+	                            <comboitem value="custom"          label="Custom JavaScript Catalog" />
+	    	                </combobox> 
+	                        <button label="Add Catalog" onClick="catalogsTabController.addCatalog(catalogChoice)" />
+	                    </hbox>
+	                </vbox>
+
+		            <separator />
+	                <vbox hflex="1" sclass="level2box">
+	                    <html:div sclass="leavemargin" >
+	                        <html:b>WorldCat Registry:</html:b>
+	                        You may also search the <html:a href="http://www.worldcat.org/registry/institutions" target="_new">
+	                        WorldCat registry</html:a> for profiles.
+	                        Try, for instance, "Virginia Tech."
+	                        <html:a href="http://libx.org/editionbuilderfaq.html#oclcimport1" target="_new">(More info).</html:a>
+	                    </html:div>
+	                    <hbox hflex="1">
+	                        <textbox id="searchWorldcatTextbox" 
+	                            js:onKeyDown="fireSubmitOnEnter(event,this.$f('searchWorldcatTextbox'),this.$f('searchWorldcatButton'));"
+	                        />
+	                    	<button label="Search" id="searchWorldcatButton" 
+	                        	onClick="catalogUrl.searchWorldcatRegistry(searchWorldcatTextbox.value)" />
+	                    </hbox>
+	                </vbox>
+				</vbox>
+
+		       	<separator vflex="1" orient="vertical"/>
+		       	<vbox hflex="3">
+		        	<vbox hflex="1" visible="false" id="catalogTabRightPanel" 
+		                use="org.libx.editionbuilder.CatalogsTabController$CatalogList" 
+		                sclass="level2box" style="table-layout:fixed" />
+		    	</vbox>
+
+		        <zscript>
+		        	catalogsTabController.initialize(catalogTabRightPanel, catalogChoice);
+		          	catalogUrl.initialize(catalogTabRightPanel);
+		        </zscript>
+			</hbox>
+		</hbox>
+	</vbox>
+</zk>

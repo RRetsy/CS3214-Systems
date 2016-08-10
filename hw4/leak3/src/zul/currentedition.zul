@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Control for basic edition information (description, etc.)
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <vbox hflex="1" sclass="mainbox">
+        <vbox hflex="1" sclass="level1box">
+            Enter brief descriptions for your edition here...
+        </vbox>
+
+        <vbox sclass="level2box" hflex="1" id="editionController" use="org.libx.editionbuilder.EditionTabController" />
+    </vbox>
+</zk>

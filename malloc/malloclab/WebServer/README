@@ -1,0 +1,18 @@
+Group Members:
+Evan Lobeto (elobeto)
+Kevin Ellis (kevellis)
+
+Design:
+To implement our multithreaded webserver we used a buffer implementation
+similar to a threadpool. We started up 200 threads that would pull connections
+from a buffer protected by semaphores and inside our main method we had an infinite
+while loop that listened for connections and then added them to the buffer for the
+threads to act on. Once a thread pulled a connection from the buffer it called the main
+server logic inside 'doit' which parsed the HTTP headers to determine what to do. If HTTP
+1.1 was detected, it would return a value of 1 which would indicate to the thread to call 'doit'
+again since there could be more requests. Once the blocking read function inside 'doit' detected
+that the socket was closed from the client end, it broke out of the loop and closed the file descriptor
+to that client and then the thread would pull another connection to service. In order to handle IPv6, we
+exploited dual-binding and edited the RIO code to act on IPv6 which effectively handled both IPv4 and 
+IPv6. For connecting to the relay server, we connected and sent a PID and called 'doit' to handle requests
+from the relay server.

@@ -1,0 +1,14 @@
+1. 10019551 times thead 0 / 3 seconds
+2. 3783948 times thread 0 + 4418170 times thread 1 / 3 seconds
+3. Yes, they acquired the lock roughly the same amount of times.
+4. Thread 0 acquired lock 1276500 many times
+   Thread 1 acquired lock 1202171 many times
+   Thread 2 acquired lock 1284178 many times
+   Thread 3 acquired lock 1204780 many times
+   Yes, with 4 threads they acquire the lock roughly the same amount of times.
+5. Using taskset with 4 threads the numbers seem closer together than without it.
+   Thread 0 acquired lock 1399922 many times
+   Thread 1 acquired lock 1350217 many times
+   Thread 2 acquired lock 1399051 many times
+   Thread 3 acquired lock 1349214 many times
+   Compared to answer 4 above.

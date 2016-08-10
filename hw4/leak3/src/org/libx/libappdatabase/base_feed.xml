@@ -1,0 +1,9 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:libx="http://libx.org/xml/libx2">
+  <id></id>
+  <title>LibX 2.0 Workspace Feed</title>
+  <author>
+    <name>LibX Team</name>
+    <uri>http://libx.org</uri>
+    <email>libx.org@gmail.com</email>
+  </author>
+</feed>

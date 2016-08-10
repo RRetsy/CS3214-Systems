@@ -1,0 +1,9 @@
+xasprintf.o xasprintf.o: ../../coreutils-8.13/lib/xasprintf.c config.h \
+  ../../coreutils-8.13/lib/xvasprintf.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h
+
+config.h:
+
+../../coreutils-8.13/lib/xvasprintf.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h:

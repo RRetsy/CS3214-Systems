@@ -1,0 +1,295 @@
+qsort serial         took 43.184 sec.
+Using 16 threads, recursive parallel depth=14
+qsort parallel       took 7.181 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 16 threads, recursive parallel depth=15
+qsort parallel       took 6.852 sec.
+ 
+qsort serial         took 43.187 sec.
+Using 16 threads, recursive parallel depth=16
+qsort parallel       took 6.985 sec.
+ 
+qsort serial         took 43.175 sec.
+Using 16 threads, recursive parallel depth=17
+qsort parallel       took 6.645 sec.
+ 
+qsort serial         took 43.186 sec.
+Using 16 threads, recursive parallel depth=18
+qsort parallel       took 6.694 sec.
+ 
+qsort serial         took 43.186 sec.
+Using 14 threads, recursive parallel depth=12
+qsort parallel       took 7.930 sec.
+ 
+qsort serial         took 43.171 sec.
+Using 14 threads, recursive parallel depth=13
+qsort parallel       took 7.341 sec.
+ 
+qsort serial         took 43.173 sec.
+Using 14 threads, recursive parallel depth=14
+qsort parallel       took 7.088 sec.
+ 
+qsort serial         took 43.167 sec.
+Using 14 threads, recursive parallel depth=15
+qsort parallel       took 7.072 sec.
+ 
+qsort serial         took 43.162 sec.
+Using 14 threads, recursive parallel depth=16
+qsort parallel       took 7.157 sec.
+ 
+qsort serial         took 43.188 sec.
+Using 12 threads, recursive parallel depth=10
+qsort parallel       took 8.869 sec.
+ 
+qsort serial         took 43.165 sec.
+Using 12 threads, recursive parallel depth=11
+qsort parallel       took 8.133 sec.
+ 
+qsort serial         took 43.174 sec.
+Using 12 threads, recursive parallel depth=12
+qsort parallel       took 8.242 sec.
+ 
+qsort serial         took 43.166 sec.
+Using 12 threads, recursive parallel depth=13
+qsort parallel       took 7.572 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 12 threads, recursive parallel depth=14
+qsort parallel       took 7.381 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 8 threads, recursive parallel depth=6
+qsort parallel       took 18.124 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 8 threads, recursive parallel depth=7
+qsort parallel       took 12.501 sec.
+ 
+qsort serial         took 43.187 sec.
+Using 8 threads, recursive parallel depth=8
+qsort parallel       took 13.505 sec.
+ 
+qsort serial         took 43.183 sec.
+Using 8 threads, recursive parallel depth=9
+qsort parallel       took 10.671 sec.
+ 
+qsort serial         took 43.187 sec.
+Using 8 threads, recursive parallel depth=10
+qsort parallel       took 9.735 sec.
+ 
+qsort serial         took 43.165 sec.
+Using 6 threads, recursive parallel depth=4
+qsort parallel       took 25.046 sec.
+ 
+qsort serial         took 43.178 sec.
+Using 6 threads, recursive parallel depth=5
+qsort parallel       took 24.071 sec.
+ 
+qsort serial         took 43.163 sec.
+Using 6 threads, recursive parallel depth=6
+qsort parallel       took 18.285 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 6 threads, recursive parallel depth=7
+qsort parallel       took 12.924 sec.
+ 
+qsort serial         took 43.163 sec.
+Using 6 threads, recursive parallel depth=8
+qsort parallel       took 14.036 sec.
+ 
+qsort serial         took 43.163 sec.
+Using 4 threads, recursive parallel depth=2
+qsort parallel       took 37.154 sec.
+ 
+qsort serial         took 43.167 sec.
+Using 4 threads, recursive parallel depth=3
+qsort parallel       took 25.284 sec.
+ 
+qsort serial         took 43.177 sec.
+Using 4 threads, recursive parallel depth=4
+qsort parallel       took 25.152 sec.
+ 
+qsort serial         took 43.183 sec.
+Using 4 threads, recursive parallel depth=5
+qsort parallel       took 24.880 sec.
+ 
+qsort serial         took 43.187 sec.
+Using 4 threads, recursive parallel depth=6
+qsort parallel       took 18.456 sec.
+ 
+qsort serial         took 43.164 sec.
+Using 2 threads, recursive parallel depth=0
+qsort parallel       took 43.185 sec.
+ 
+qsort serial         took 43.180 sec.
+Using 2 threads, recursive parallel depth=1
+qsort parallel       took 37.481 sec.
+ 
+qsort serial         took 43.181 sec.
+Using 2 threads, recursive parallel depth=2
+qsort parallel       took 38.024 sec.
+ 
+qsort serial         took 43.195 sec.
+Using 2 threads, recursive parallel depth=3
+qsort parallel       took 26.897 sec.
+ 
+qsort serial         took 43.188 sec.
+Using 2 threads, recursive parallel depth=4
+qsort parallel       took 27.247 sec.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

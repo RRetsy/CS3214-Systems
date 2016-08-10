@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <vbox hflex="1" sclass="mainbox">
+	    <hbox width="100%" sclass="level1box">
+	    	<html:div>
+		        Configure the proxy services that are included in your edition.
+		        Currently, LibX supports Useful Utilities's <html:a target="_new" href="http://www.usefulutilities.com/">EZProxy</html:a>
+		        service and III's <html:a target="_new" href="http://www.iii.com/mill/digital.shtml#wam">Web Access Management (WAM)</html:a>.
+		        Multiple proxies can be configured.
+		        To change the order in which proxies appear in your edition,
+		        drag and drop each proxy's header label.
+	        </html:div>
+	    </hbox>
+
+	    <hbox hflex="1">
+			<hbox hflex="1" id="proxyController" 
+				use="org.libx.editionbuilder.ProxyTabsController" style="table-layout:fixed">
+				<hbox hflex="2">
+					<vbox hflex="1" id="proxyChoiceButtonVbox" sclass="level2box" />
+				</hbox>
+				<separator orient="vertical" />
+				<hbox hflex="7">
+					<vbox hflex="1" spacing="20px" id="proxyList" use="org.libx.editionbuilder.ProxyTabsController$ProxyList" sclass="level2box" />
+				</hbox>
+
+				<zscript>
+					proxyController.initialize(proxyList, proxyChoiceButtonVbox);
+				</zscript>
+			</hbox>
+	    </hbox>
+	</vbox>
+</zk>

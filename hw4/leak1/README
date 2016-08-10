@@ -1,0 +1,5 @@
+
+This heap dump was produced with
+
+java -Xmx64m -XX:+HeapDumpOnOutOfMemoryError LeakingMap
+

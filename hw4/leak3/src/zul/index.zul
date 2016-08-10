@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Main edition builder application.
+
+  Written by Tilottama Gaat and Godmar Back
+  <libx.editions@gmail.com>
+
+  $Id: index.zul,v 1.33 2010/09/25 18:50:32 gback Exp $
+-->
+
+<?page title="LibX Edition Builder" ?>
+<window xmlns:html="http://www.w3.org/1999/xhtml" id="root" use="org.libx.editionbuilder.MainWindowController">
+    <style src="../styles/editionbuilder.css" />
+    <script type="text/javascript" src="utility.js" />
+
+    <zscript>
+        import org.libx.editionbuilder.*;
+
+        Model.initializeDesktop();
+        root.initialize();
+    </zscript>
+
+    <?component name="libx.alleditions" macro-uri="alleditions.zul" inline="true"?>
+    <?component name="libx.myeditions" macro-uri="myeditions.zul" inline="true"?>
+    <?component name="libx.currentedition" macro-uri="currentedition.zul" inline="true"?>
+    <?component name="libx.links" macro-uri="links.zul" inline="true"?>
+    <?component name="libx.catalogs" macro-uri="catalogs.zul" inline="true"?>
+    <?component name="libx.openurl" macro-uri="openurl.zul" inline="true"?>
+    <?component name="libx.proxy" macro-uri="proxy.zul" inline="true"?>
+    <?component name="libx.options" macro-uri="options.zul" inline="true"?>
+    <?component name="libx.additionalfiles" macro-uri="additionalfiles.zul" inline="true"?>
+    <?component name="libx.feeds" macro-uri="feeds.zul" inline="true"?>
+    <?component name="libx.announcement" macro-uri="announcement.zul" inline="true"?>
+
+    <!-- We probably won't get this done before releasing it.
+    <?component name="mockuptoolbar" macro-uri="toolbar.zul"?>
+    <mockuptoolbar id="mockup" />
+    -->
+
+    <vbox hflex="1">
+        <html:h2 align="center" style="color: #006633;" >
+            LibX Edition Builder
+        </html:h2>
+        <html:p align="right" style="padding-right:50px">
+            <html:a href="http://libx.org" target="_blank">LibX</html:a> - a browser plugin for direct library access
+        </html:p>
+        <vbox hflex="1" sclass="mainbox">
+            <tabbox id="mainTabbox" hflex="1">
+                <tabs>
+                    <tab label="All Editions" id="alleditiontab" visible="true" />
+                    <tab label="My Editions" id="starttab" visible="true" />
+                    <tab label="Description" id="editiontab" visible="false" />
+                    <tab label="Shortcuts" id="linkstab" visible="false" />
+                    <tab label="Catalogs &amp; Databases" id="cattab" visible="false" />
+                    <tab label="OpenURL Resolvers" id="openurltab" visible="false" />
+                    <tab label="Proxy Access" id="eztab" visible="false" />
+                    <tab label="Options" id="optionstab" visible="false" />
+                    <tab label="File Management" id="additionalfilestab" visible="false" />
+                    <tab label="Cue Management" id="feedstab" visible="false" />
+                    <tab label="Announcements" id="announcementtab" visible="true" />
+        
+                    <zscript>
+                        Tab[] tabs = {editiontab,linkstab,cattab,openurltab,eztab,optionstab,additionalfilestab};
+                        root.registerTabs(tabs);
+                        root.registerTabbox(mainTabbox);
+                        if (Config.feedsactivated)
+                            root.registerTab(feedstab);
+                    </zscript>
+                </tabs>
+    
+                <tabpanels>
+                    <tabpanel>
+                        <libx.alleditions/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.myeditions/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.currentedition/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.links/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.catalogs/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.openurl/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.proxy/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.options/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.additionalfiles/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.feeds/>
+                    </tabpanel>
+    
+                    <tabpanel>
+                        <libx.announcement/>
+                    </tabpanel>
+                </tabpanels>
+            </tabbox>
+        </vbox>
+        <vbox hflex="1" style="margin:1em" id="statusbox" />
+        <vbox hflex="1">
+          <!--
+            <html:b style="color:red">We will be taking the edition builder down for updates today; expect intermittent shutdowns.  (If you're working as a registered user, you should not lose any data.)</html:b>
+            -->
+            <html:i>LibX Edition Builder written by Tilottama Gaat and Godmar Back (libx.editions@gmail.com)</html:i>
+        </vbox>
+        <zscript>
+            root.initialize(statusbox);
+            allListBox.initialize(allListSelectedEditionInfo, allListPaging, allListSearchResults);
+            userinfo.activateSessionUser();
+            /*
+            if (userinfo.isAuthenticated())
+                starttab.setSelected(true);
+                */
+        </zscript>
+    </vbox>
+</window>
+<!-- vim: sw=2
+-->

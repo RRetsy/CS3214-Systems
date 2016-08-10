@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+	<vbox hflex="1" sclass="mainbox">
+		<vbox hflex="1" sclass="level1box">
+			Use this tab to manage the files included in your edition.
+			You can upload images and other files that will be bundled with your
+   			edition.  You can also specify a URL from which to download files.
+			You must upload images before you can set your edition's logos.
+		</vbox>
+
+        <vbox hflex="1" sclass="level2box">
+        	<vbox hflex="1" id="fileController" use="org.libx.editionbuilder.FileTabController" />
+        	<button label="Add a new image file">
+            	<attribute name="onClick">
+                	fileController.addNewFile("chrome/libx/skin/libx");
+            	</attribute>
+        	</button>
+    	</vbox>
+	</vbox>
+</zk>

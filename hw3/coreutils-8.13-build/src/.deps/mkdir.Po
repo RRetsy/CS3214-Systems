@@ -1,0 +1,305 @@
+mkdir.o mkdir.o: ../../coreutils-8.13/src/mkdir.c ../lib/config.h \
+  ../lib/stdio.h /usr/include/stdio.h /usr/include/features.h \
+  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
+  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h \
+  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+  /usr/include/libio.h /usr/include/_G_config.h ../lib/wchar.h \
+  /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+  /usr/include/bits/stdio.h /usr/include/sys/types.h ../lib/time.h \
+  /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
+  ../lib/sys/select.h /usr/include/sys/select.h \
+  /usr/include/bits/select.h /usr/include/bits/sigset.h \
+  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
+  /usr/include/bits/pthreadtypes.h ../lib/getopt.h /usr/include/getopt.h \
+  ../lib/selinux/selinux.h /usr/include/selinux/selinux.h \
+  ../../coreutils-8.13/src/system.h ../lib/alloca.h ../lib/sys/stat.h \
+  /usr/include/xlocale.h /usr/include/sys/stat.h /usr/include/bits/stat.h \
+  /usr/include/sys/param.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/limits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/syslimits.h \
+  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
+  /usr/include/linux/param.h /usr/include/asm/param.h \
+  /usr/include/asm-x86_64/param.h ../lib/unistd.h /usr/include/unistd.h \
+  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+  /usr/include/bits/confname.h ../lib/configmake.h ../lib/sys/time.h \
+  /usr/include/sys/time.h ../lib/string.h /usr/include/string.h \
+  /usr/include/bits/string.h /usr/include/bits/string2.h ../lib/stdlib.h \
+  /usr/include/stdlib.h /usr/include/errno.h /usr/include/bits/errno.h \
+  /usr/include/linux/errno.h /usr/include/asm/errno.h \
+  /usr/include/asm-x86_64/errno.h /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h \
+  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h version.h \
+  ../../coreutils-8.13/lib/exitfail.h ../lib/fcntl.h /usr/include/fcntl.h \
+  /usr/include/bits/fcntl.h /usr/include/bits/uio.h ../lib/dirent.h \
+  /usr/include/dirent.h /usr/include/bits/dirent.h ../lib/inttypes.h \
+  /usr/include/inttypes.h /usr/include/stdint.h \
+  ../../coreutils-8.13/lib/stat-macros.h \
+  ../../coreutils-8.13/lib/timespec.h ../lib/ctype.h /usr/include/ctype.h \
+  ../lib/locale.h /usr/include/locale.h /usr/include/bits/locale.h \
+  ../../coreutils-8.13/lib/gettext.h /usr/include/libintl.h \
+  ../../coreutils-8.13/lib/xalloc.h \
+  ../../coreutils-8.13/lib/xalloc-oversized.h \
+  ../../coreutils-8.13/lib/verify.h \
+  ../../coreutils-8.13/lib/unlocked-io.h \
+  ../../coreutils-8.13/lib/same-inode.h \
+  ../../coreutils-8.13/lib/dirname.h ../../coreutils-8.13/lib/dosname.h \
+  ../../coreutils-8.13/lib/openat.h ../../coreutils-8.13/lib/closein.h \
+  ../../coreutils-8.13/lib/closeout.h \
+  ../../coreutils-8.13/lib/version-etc.h \
+  ../../coreutils-8.13/lib/propername.h \
+  ../../coreutils-8.13/lib/progname.h ../../coreutils-8.13/lib/intprops.h \
+  ../../coreutils-8.13/lib/inttostr.h ../../coreutils-8.13/lib/intprops.h \
+  ../../coreutils-8.13/lib/error.h ../../coreutils-8.13/lib/mkdir-p.h \
+  ../../coreutils-8.13/lib/modechange.h \
+  ../../coreutils-8.13/src/prog-fprintf.h \
+  ../../coreutils-8.13/lib/quote.h ../../coreutils-8.13/lib/savewd.h
+
+../lib/config.h:
+
+../lib/stdio.h:
+
+/usr/include/stdio.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+../lib/wchar.h:
+
+/usr/include/wchar.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/gconv.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/sys/types.h:
+
+../lib/time.h:
+
+/usr/include/time.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+../lib/sys/select.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+../lib/getopt.h:
+
+/usr/include/getopt.h:
+
+../lib/selinux/selinux.h:
+
+/usr/include/selinux/selinux.h:
+
+../../coreutils-8.13/src/system.h:
+
+../lib/alloca.h:
+
+../lib/sys/stat.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
+
+/usr/include/sys/param.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/limits.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/bits/posix1_lim.h:
+
+/usr/include/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/bits/posix2_lim.h:
+
+/usr/include/bits/xopen_lim.h:
+
+/usr/include/linux/param.h:
+
+/usr/include/asm/param.h:
+
+/usr/include/asm-x86_64/param.h:
+
+../lib/unistd.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+../lib/configmake.h:
+
+../lib/sys/time.h:
+
+/usr/include/sys/time.h:
+
+../lib/string.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+../lib/stdlib.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/errno.h:
+
+/usr/include/bits/errno.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/asm/errno.h:
+
+/usr/include/asm-x86_64/errno.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+version.h:
+
+../../coreutils-8.13/lib/exitfail.h:
+
+../lib/fcntl.h:
+
+/usr/include/fcntl.h:
+
+/usr/include/bits/fcntl.h:
+
+/usr/include/bits/uio.h:
+
+../lib/dirent.h:
+
+/usr/include/dirent.h:
+
+/usr/include/bits/dirent.h:
+
+../lib/inttypes.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/stdint.h:
+
+../../coreutils-8.13/lib/stat-macros.h:
+
+../../coreutils-8.13/lib/timespec.h:
+
+../lib/ctype.h:
+
+/usr/include/ctype.h:
+
+../lib/locale.h:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:
+
+../../coreutils-8.13/lib/gettext.h:
+
+/usr/include/libintl.h:
+
+../../coreutils-8.13/lib/xalloc.h:
+
+../../coreutils-8.13/lib/xalloc-oversized.h:
+
+../../coreutils-8.13/lib/verify.h:
+
+../../coreutils-8.13/lib/unlocked-io.h:
+
+../../coreutils-8.13/lib/same-inode.h:
+
+../../coreutils-8.13/lib/dirname.h:
+
+../../coreutils-8.13/lib/dosname.h:
+
+../../coreutils-8.13/lib/openat.h:
+
+../../coreutils-8.13/lib/closein.h:
+
+../../coreutils-8.13/lib/closeout.h:
+
+../../coreutils-8.13/lib/version-etc.h:
+
+../../coreutils-8.13/lib/propername.h:
+
+../../coreutils-8.13/lib/progname.h:
+
+../../coreutils-8.13/lib/intprops.h:
+
+../../coreutils-8.13/lib/inttostr.h:
+
+../../coreutils-8.13/lib/intprops.h:
+
+../../coreutils-8.13/lib/error.h:
+
+../../coreutils-8.13/lib/mkdir-p.h:
+
+../../coreutils-8.13/lib/modechange.h:
+
+../../coreutils-8.13/src/prog-fprintf.h:
+
+../../coreutils-8.13/lib/quote.h:
+
+../../coreutils-8.13/lib/savewd.h:

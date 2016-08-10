@@ -1,0 +1,6 @@
+diacrit.o diacrit.o: ../../coreutils-8.13/lib/diacrit.c config.h \
+  ../../coreutils-8.13/lib/diacrit.h
+
+config.h:
+
+../../coreutils-8.13/lib/diacrit.h:

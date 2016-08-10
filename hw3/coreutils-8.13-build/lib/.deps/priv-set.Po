@@ -1,0 +1,6 @@
+priv-set.o priv-set.o: ../../coreutils-8.13/lib/priv-set.c config.h \
+  ../../coreutils-8.13/lib/priv-set.h
+
+config.h:
+
+../../coreutils-8.13/lib/priv-set.h:

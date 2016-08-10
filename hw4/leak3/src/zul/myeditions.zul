@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+	<?component name="libx.signonbox" macro-uri="signon.zul" inline="true"?>
+
+	<vbox hflex="1" sclass="mainbox">
+   		<hbox hflex="1" style="table-layout:fixed">
+   			<hbox hflex="2">
+				<libx.signonbox />
+			</hbox>
+			<separator vflex="1" orient="vertical" />
+        	<hbox hflex="4">
+            	<box hflex="1" sclass="level1box" visible="false" id="homePageBox" use="org.libx.editionbuilder.EditionListVboxController$HomepageBoxController">
+                    	<html id="currentLink"/>
+                    	<toolbarbutton id="changeHomePageLinkButton" label="(Change)" />
+               	</box>
+            </hbox>
+   		</hbox>
+
+   		<hbox hflex="1" style="table-layout:fixed">
+   			<vbox hflex="1">
+   				<html:b>
+                    <hbox id="selectEditionsLabel" visible="false">
+                        <html content="Select an edition (" />
+                        <a href="javascript:;" id="sortEditionsButton" label="Sort By Description" />
+                        <html content=")" />
+                    </hbox>
+   				</html:b>
+        		<vbox hflex="1" sclass="level2box" id="editionListVbox" visible="false" use="org.libx.editionbuilder.EditionListVboxController" />
+
+                <window id="helpDialogWindow" closable="true" visible="false" use="org.libx.editionbuilder.HelpDialog" border="normal" width="60%" left="20%">
+                    <caption label="Request Help From LibX Team" />
+                    <vbox>
+                        Please describe how we can help you. A LibX Team member will return your message.
+                        <textbox rows="10" width="100%" id="helpQuestionTextbox" />
+                        If you like us to make changes to your configuration, you can
+                        also share ownership with us.
+                        <hbox>
+                            <checkbox id="helpShareOwnershipCheckbox" label="Share Ownership with LibX Team" />
+                            <button id="helpSubmitButton" label="Send" />
+                        </hbox>
+                    </vbox>
+                    <zscript>
+                        helpDialogWindow.initialize(helpQuestionTextbox, helpShareOwnershipCheckbox, helpSubmitButton);
+                    </zscript>
+                </window>
+	     	</vbox>
+
+			<separator vflex="1" orient="vertical" />
+	     	<vbox hflex="1">
+	     		<html:b>
+	     			<html id="selectRevisionsLabel" content="Select a revision" visible="false" />
+	     		</html:b>
+	        	<vbox hflex="1" sclass="level2box" id="revisionListVbox" visible="false" use="org.libx.editionbuilder.EditionListVboxController$RevisionListVboxController" style="table-layout:fixed" />
+    	    </vbox>
+   			<zscript>
+	   			editionListVbox.initialize(revisionListVbox, homePageBox, selectEditionsLabel, sortEditionsButton, helpDialogWindow);
+   				revisionListVbox.initialize(editionListVbox, selectRevisionsLabel);
+   				homePageBox.initialize(currentLink, changeHomePageLinkButton, editionListVbox);
+   			</zscript>
+   		</hbox>
+   	</vbox>
+</zk>
+<!-- vim: sw=4
+-->

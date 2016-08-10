@@ -1,0 +1,9 @@
+c-ctype.o c-ctype.o: ../../coreutils-8.13/lib/c-ctype.c config.h \
+  ../../coreutils-8.13/lib/c-ctype.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h
+
+config.h:
+
+../../coreutils-8.13/lib/c-ctype.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h:

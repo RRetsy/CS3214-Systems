@@ -1,0 +1,1089 @@
+/*
+ * webserver.c - A webserver based off of the CS:APP tiny.c webserver.
+ * It serves static and dynamic content as well as responeds to status requests
+ * via the proc filesystem.
+ */
+#include "csapp.h"
+#include "sbuf.h"
+#include "list.h"
+#include "webserver.h"
+#include <stdbool.h>
+#include <assert.h>
+#define BUFFSIZE 2000
+#define THREADS 200
+
+char * rootDir; //root directory
+sbuf_t conBuff;	//buffer of connection descriptors
+int isRelayMode;
+pthread_mutex_t allocListMutex;
+pthread_mutex_t loopCounterMutex;
+int runningLoops;
+
+//list struct for allocanon
+typedef struct memAnon 
+{
+	struct list_elem elem;
+	char* memAddr;
+} memAnon;
+
+//list for mem addresses
+struct list memList;
+
+/*
+The main method
+*/
+int main(int argc, char **argv) 
+{   
+    int listenfd, connfd, port, clientlen;
+	runningLoops = 0;
+    struct sockaddr_in clientaddr;
+	pthread_t tid;
+	//get the relay information
+	int relayPort;
+	char * relayHost = malloc(sizeof(char)*100);
+	//ignore SIGPIPE LIKE A BOSS
+	signal(SIGPIPE, SIG_IGN);
+
+    /* Check command line args */
+    if (argc < 3) {
+    fprintf(stderr, "usage: %s -p/-r/-R  <port>/<relayhost:port>/<path>\n", argv[0]);
+    exit(1);
+    }
+
+	//get the port out of the command line
+	port = get_port(argc, argv);
+
+	//set relay server
+	isRelayMode = get_relay(argc, argv, relayHost, &relayPort);
+
+	//get default root directory
+	rootDir = get_root(argc, argv);
+	
+
+	sbuf_init(&conBuff, BUFFSIZE);
+    listenfd = Open_listenfd(port);
+
+	int i = 0;
+	//start up the threads
+	for (; i < THREADS; i ++)
+	{
+		//thread routine "thread"
+		Pthread_create(&tid, NULL, thread, NULL);
+	}
+
+	//init mutexes
+	pthread_mutex_init(&allocListMutex, NULL);
+	pthread_mutex_init(&loopCounterMutex, NULL);
+	//init list
+	list_init(&memList);
+
+	if (isRelayMode)
+	{	
+		//printf("relayHost:%s\nrelayPort:%d\n",relayHost,relayPort);
+		//open connection
+		int relayFd = Open_clientfd(relayHost, relayPort);
+
+		//send PID info
+		Rio_writen(relayFd, "kevellis\r\n", 10);
+		
+		//wait for requests
+		while(1)
+		{
+			doit(relayFd);
+		}
+		//end server once connection closed
+		return 0;
+	}
+
+
+    while (1) {
+    clientlen = sizeof(clientaddr);
+    connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
+	sbuf_insert(&conBuff, connfd);
+    }
+}
+
+/*
+The thread routine that gets executed whenever a thread is created.
+This routine continuously tries to take a file descriptor out of a list
+and serve the client.
+*/
+void *thread(void *vargp)
+{
+	//detach thread so that it will release memory resources upon connection exit.
+    Pthread_detach(pthread_self());
+	int isPersistent = 0;
+	while(1)
+	{
+		//take a job out of the list of waiting clients (via their corresponding descriptors)
+		int fd = sbuf_remove(&conBuff);	
+		//service the client
+		isPersistent = doit(fd);
+		
+		//if the persistant variable is set (http 1.1 requests) continue executing on the same file descriptors
+		while (isPersistent)
+		{
+			isPersistent = doit(fd);
+		}
+
+		//close the connection to the client
+		Close(fd);
+	}
+}
+
+/*
+ * doit - handles HTTP request/response transactions
+fd: the file descriptor that represents the client
+ */
+int doit(int fd) 
+{
+		int is_static;
+		int isPersistent = 0;
+		struct stat sbuf;
+
+		char * buf = malloc(sizeof(char)*MAXLINE);
+		char * method = malloc(sizeof(char)*MAXLINE);
+		char * uri = malloc(sizeof(char)*MAXLINE);
+		char * version = malloc(sizeof(char)*MAXLINE);
+		char * filename = malloc(sizeof(char)*MAXLINE);
+		char * cgiargs = malloc(sizeof(char)*MAXLINE);
+		char * templine = malloc(sizeof(char)*MAXLINE);
+	  
+		rio_t rio;
+		/* Read request line and headers */
+		Rio_readinitb(&rio, fd);
+		ssize_t res = Rio_readlineb(&rio, buf, MAXLINE-1);
+		if(res < 0)
+		{
+			return 0;
+		}
+		if (strlen(buf) > 5000)
+		{
+			sleep(10);
+			clienterror(fd, "uri invalid", "400", "Bad Request", "URI was too large", isPersistent);
+			return 0;
+		}
+		//reads in the "GET" "/" and "HTTP/1.0" or whatever to the strings                   
+		if (sscanf(buf, "%s %s %s", method, uri, version) < 3)
+		{	
+			return 0;
+		}
+
+		//if the version is http 1.1
+		if (strstr(version, "1.1"))
+		{
+			isPersistent = 1;
+		}
+
+		if (strcasecmp(method, "GET")) {                   
+		   clienterror(fd, method, "501", "Not Implemented",
+		            "Server does not implement this method", isPersistent);
+		    return isPersistent;
+		}
+		//reads in the "host: <hostname>"                                                   
+		read_requesthdrs(&rio);                             
+
+		strcpy(filename, rootDir);
+		/* Parse URI from GET request */
+		is_static = parse_uri(uri, templine, cgiargs);
+		strcat(filename, templine);
+
+		if (strstr(uri, "meminfo") && strstr(uri, "loadavg"))
+		{
+			clienterror(fd, filename, "400", "Bad Request",
+		        "Server couldn't handle this request", isPersistent);
+
+		}
+		//if it's a load request
+		else if (check_load(uri))
+		{
+			//serve the load request
+			serve_load(uri, fd, isPersistent);
+		}
+		//if it's a meminfo request
+		else if (check_mem(uri))
+		{
+			//serve the meminfo request
+			serve_meminfo(uri, fd, isPersistent);
+
+		}
+		//allocanon
+		else if (strstr(uri, "allocanon") && strlen(uri) == 10)
+		{
+			int res = allocAnon();
+			char info[100];
+			sprintf(info, "Server has %d blocks allocated", res);
+			clientInfo(fd, "allocanon", "200", "OK",
+		        info, isPersistent);			
+		}
+		//freeanon
+		else if (strstr(uri, "freeanon") && strlen(uri) == 9)
+		{
+			int res = freeAnon();
+			char info[100];
+			sprintf(info, "Server free'd 1 block,  has %d blocks allocated", res);
+			clientInfo(fd, "freeanon", "200", "OK",
+		        info, isPersistent);
+		}
+		//run loop
+		else if(strstr(uri, "runloop") && strlen(uri) == 8)
+		{
+			pthread_t tid;
+			Pthread_create(&tid, NULL, runloop, NULL);
+			char info[100];
+			pthread_mutex_lock(&loopCounterMutex);
+			sprintf(info, "Server is running %d loops", runningLoops);
+			pthread_mutex_unlock(&loopCounterMutex);
+			clientInfo(fd, "runloop", "200", "OK",
+		        info, isPersistent);
+		}			
+
+	 	else if (stat(filename, &sbuf) < 0) {      
+
+		clienterror(fd, filename, "404", "Not found",
+		        "Server couldn't find this file", isPersistent);
+
+		}                                                   
+		
+		else if (is_static) { //serve static content        
+			if (!(S_ISREG(sbuf.st_mode)) || !(S_IRUSR & sbuf.st_mode)) { 
+				clienterror(fd, filename, "403", "Forbidden",
+				    "Server couldn't read the file", isPersistent);
+			}
+			else
+			{
+				serve_static(fd, filename, sbuf.st_size, isPersistent);
+			}   
+		}		
+		
+		free(buf);
+		free(method);
+		free(uri);
+		free(version);
+		free(filename);
+		free(cgiargs);
+		free(templine);
+
+		return isPersistent;
+}
+
+
+
+
+/*
+ * read_requesthdrs - read and parse HTTP request headers
+ */
+void read_requesthdrs(rio_t *rp) 
+{
+    char * buf = malloc(sizeof(char) * MAXLINE);
+
+    ssize_t res = Rio_readlineb(rp, buf, MAXLINE);
+	if(res < 0)
+	{
+		free(buf);
+		return;
+	}
+    while(strcmp(buf, "\r\n")) 
+	{     
+		res = Rio_readlineb(rp, buf, MAXLINE);
+		if(res < 0)
+		{
+				break;
+		}
+		//printf("%s", buf);
+    }
+    free(buf);
+    return;
+}
+
+
+/*
+ * parse_uri - parse URI into filename and CGI args
+ *             return 0 if dynamic content, 1 if static
+ */
+int parse_uri(char *uri, char *filename, char *cgiargs) 
+{
+    char *ptr;
+    if (!strstr(uri, "cgi-bin")) {  /* Static content */
+    strcpy(cgiargs, "");
+	//if the root is not null, we don't need a dot
+	if (strlen(rootDir) == 0)
+	{		
+		strcpy(filename, "."); 
+	}                           
+    strcat(filename, uri);
+	
+    if (uri[strlen(uri)-1] == '/')                 
+        strcat(filename, "home.html");               
+    return 1;
+    }
+
+}
+
+
+/*
+ * serve_static - copy a file back to the client 
+ */
+void serve_static(int fd, char *filename, int filesize, int isPersistent) 
+{
+    int srcfd;
+    char *srcp, filetype[MAXLINE], buf[MAXLINE];
+ 
+    /* Send response headers to client */
+    get_filetype(filename, filetype);
+	
+	//print out appropriate status line	
+	if (isPersistent)
+	{
+		sprintf(buf, "HTTP/1.1 200 OK\r\n");
+	}
+	else
+	{
+		sprintf(buf, "HTTP/1.0 200 OK\r\n");  
+	}
+    sprintf(buf, "%sServer: Server Web Server\r\n", buf);
+    sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
+    sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
+    Rio_writen(fd, buf, strlen(buf));     
+
+	/* Send response body to client */
+	srcfd = Open(filename, O_RDONLY, 0);    
+	srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
+	Close(srcfd);                           
+	Rio_writen(fd, srcp, filesize);         
+	Munmap(srcp, filesize);       
+	      
+}
+
+/*
+ * get_filetype - derive file type from file name
+ */
+void get_filetype(char *filename, char *filetype) 
+{
+    if (strstr(filename, ".html"))
+    strcpy(filetype, "text/html");
+    else if (strstr(filename, ".gif"))
+    strcpy(filetype, "image/gif");
+    else if (strstr(filename, ".jpg"))
+    strcpy(filetype, "image/jpeg");
+    else if (strstr(filename, ".css"))
+    strcpy(filetype, "text/css");
+    else if (strstr(filename, ".js"))
+    strcpy(filetype, "text/js");
+	else if (strstr(filename, "loadavg"))
+	strcpy(filetype, "text/js");
+	else if (strstr(filename, "meminfo"))
+	strcpy(filetype, "text/js");
+    else
+    strcpy(filetype, "text/plain");
+}  
+
+/*
+Returns an error message to the client
+fd: the file descriptor of the client
+cause: why the message is being displayed
+errnum: the status/error number
+shortmsg: the message to be sent back
+longmsg: longer message
+isPersistent: if we are in http/1.1 or http/1.0
+ */
+void clienterror(int fd, char *cause, char *errnum, 
+         char *shortmsg, char *longmsg, int isPersistent) 
+{
+    char * buf = malloc(sizeof(char)*MAXLINE);
+	char * body = malloc(sizeof(char)*MAXLINE);
+
+    /* Build the HTTP response body */
+    sprintf(body, "<html><title>Server Error</title>");
+    sprintf(body, "%s<body bgcolor=""00FFFF"">\r\n", body);
+    sprintf(body, "%s%s: %s\r\n", body, errnum, shortmsg);
+    sprintf(body, "%s<p>%s: %s\r\n", body, longmsg, cause);
+    sprintf(body, "%s<hr><em>The Server Web server</em>\r\n", body);
+
+    /* Print the HTTP response */
+	//print out appropriate status line	
+	if (isPersistent)
+	{
+		sprintf(buf, "HTTP/1.1 %s %s\r\n", errnum, shortmsg);
+	}
+	else
+	{
+    	sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
+	}
+    Rio_writen(fd, buf, strlen(buf));
+    sprintf(buf, "Content-type: text/html\r\n");
+    Rio_writen(fd, buf, strlen(buf));
+    sprintf(buf, "Content-length: %d\r\n\r\n", (int)strlen(body));
+    Rio_writen(fd, buf, strlen(buf));
+    Rio_writen(fd, body, strlen(body));
+	free(buf);
+	free(body);
+}
+
+/*
+Reports the message to the client, along with the appropriate headers
+fd: the file descriptor of the client
+cause: why the message is being displayed
+errnum: the status/error number
+shortmsg: the message to be sent back
+longmsg: longer message
+isPersistent: if we are in http/1.1 or http/1.0
+*/
+void clientInfo(int fd, char *cause, char *errnum, 
+         char *shortmsg, char *longmsg, int isPersistent) 
+{
+    char * buf = malloc(sizeof(char)*MAXLINE);
+	char * body = malloc(sizeof(char)*MAXLINE);
+
+    /* Build the HTTP response body */
+    sprintf(body, "<html><title>Server Info</title>");
+    sprintf(body, "%s<body bgcolor=""00FFFF"">\r\n", body);
+    sprintf(body, "%s%s: %s\r\n", body, errnum, shortmsg);
+    sprintf(body, "%s<p>%s: %s\r\n", body, longmsg, cause);
+    sprintf(body, "%s<hr><em>The Server Web server</em>\r\n", body);
+
+    /* Print the HTTP response */
+	//print out appropriate status line	
+	if (isPersistent)
+	{
+		sprintf(buf, "HTTP/1.1 %s %s\r\n", errnum, shortmsg);
+	}
+	else
+	{
+    	sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
+	}
+    Rio_writen(fd, buf, strlen(buf));
+    sprintf(buf, "Content-type: text/html\r\n");
+    Rio_writen(fd, buf, strlen(buf));
+    sprintf(buf, "Content-length: %d\r\n\r\n", (int)strlen(body));
+    Rio_writen(fd, buf, strlen(buf));
+    Rio_writen(fd, body, strlen(body));
+	free(buf);
+	free(body);
+}
+
+
+/*
+ * Serves the load requests
+*/
+void serve_load(char * uri, int fd, int isPersistent)
+{
+	char * buf = malloc(sizeof(char)*MAXLINE);
+	char* loadavgJson = malloc(sizeof(char)*MAXLINE);
+	get_loadavg(loadavgJson);
+	int loadSize = strlen(loadavgJson);
+	//check for callback
+	if (strstr(uri, "?callback=") || strstr(uri, "&callback="))
+	{	
+		char * info = malloc(sizeof(char)*MAXLINE);
+	 	info = serve_callback(uri);
+		if (validateCallback(info))
+		{	
+			char * newString = malloc(sizeof(char) * (loadSize + strlen(info)));
+			strcpy(newString, info);
+			strcat(newString, "(");
+			strcat(newString, loadavgJson);
+			strcat(newString, ")");
+
+			//print out appropriate status line	
+			if (isPersistent)
+			{
+				sprintf(buf, "HTTP/1.1 200 OK\r\n");
+			}
+			else
+			{
+				sprintf(buf, "HTTP/1.0 200 OK\r\n");  
+			}
+    		Rio_writen(fd, buf, strlen(buf));  
+    		sprintf(buf, "Server: Server Web Server\r\n");
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-length: %d\r\n", strlen(newString));
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-type: text/js\r\n\r\n");
+    		Rio_writen(fd, buf, strlen(buf));
+
+    		Rio_writen(fd, newString, strlen(newString));
+			free(newString);
+
+		}
+		else
+		{
+			clienterror(fd, uri, "400", "Bad Request",
+		        "Server couldn't understand this request", isPersistent);
+		}
+		free(info);
+		
+	}
+	else
+	{
+
+			//print out appropriate status line	
+			if (isPersistent)
+			{
+				sprintf(buf, "HTTP/1.1 200 OK\r\n");
+			}
+			else
+			{
+				sprintf(buf, "HTTP/1.0 200 OK\r\n");  
+			}
+    		Rio_writen(fd, buf, strlen(buf));  
+    		sprintf(buf, "Server: Server Web Server\r\n");
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-length: %d\r\n", strlen(loadavgJson));
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-type: text/js\r\n\r\n");
+    		Rio_writen(fd, buf, strlen(buf));
+
+    		Rio_writen(fd, loadavgJson, strlen(loadavgJson));
+
+	}
+	free(loadavgJson);
+	free(buf);
+}
+
+/*
+ * Serves the meminfo requests
+*/
+void serve_meminfo(char * uri, int fd, int isPersistent)
+{
+	char * buf = malloc(sizeof(char)*MAXBUF);
+	char* meminfoJson = calloc(MAXLINE, sizeof(char));
+	get_meminfo(meminfoJson);
+	int loadSize = strlen(meminfoJson);
+
+
+	//check for callback
+	if (strstr(uri, "?callback=") || strstr(uri, "&callback="))
+	{	
+		char * info = malloc(sizeof(char)*MAXLINE);
+	 	info = serve_callback(uri);
+		if (validateCallback(info))
+		{	
+			char * newString = malloc(sizeof(char) * (loadSize + strlen(info)));
+			strcpy(newString, info);
+			strcat(newString, "(");
+			strcat(newString, meminfoJson);
+			strcat(newString, ")");
+
+			//print out appropriate status line	
+			if (isPersistent)
+			{
+				sprintf(buf, "HTTP/1.1 200 OK\r\n");
+			}
+			else
+			{
+				sprintf(buf, "HTTP/1.0 200 OK\r\n");  
+			}
+    		Rio_writen(fd, buf, strlen(buf));  
+    		sprintf(buf, "Server: Server Web Server\r\n");
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-length: %d\r\n", strlen(newString));
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-type: text/js\r\n\r\n");
+    		Rio_writen(fd, buf, strlen(buf));
+
+    		Rio_writen(fd, newString, strlen(newString));
+
+			free(newString);
+
+		}
+		else
+		{
+			clienterror(fd, uri, "400", "Bad Request",
+		        "Server couldn't understand this request", isPersistent);
+		}
+		free(info);
+		
+	}
+	else
+	{	
+			
+			//print out appropriate status line	
+			if (isPersistent)
+			{
+				sprintf(buf, "HTTP/1.1 200 OK\r\n");
+			}
+			else
+			{
+				sprintf(buf, "HTTP/1.0 200 OK\r\n");  
+			}
+    		Rio_writen(fd, buf, strlen(buf));  
+    		sprintf(buf, "Server: Server Web Server\r\n");
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-length: %d\r\n", strlen(meminfoJson));
+			Rio_writen(fd, buf, strlen(buf));
+    		sprintf(buf, "Content-type: text/js\r\n\r\n");
+    		Rio_writen(fd, buf, strlen(buf));
+			
+    		Rio_writen(fd, meminfoJson, strlen(meminfoJson));
+
+
+	}
+	free(meminfoJson);
+	free(buf);
+}
+
+
+
+/*
+* Returns a JSON string representing the meminfo from /proc
+*/
+void get_meminfo(char * meminfoJson)
+{
+    FILE *mem = fopen("/proc/meminfo", "rb");
+	char buffer[200];
+	
+	//array to store tokenized lines
+	int i = 0;
+	char** results = (char**) calloc(129, sizeof(char*));
+	for(; i < 129; i++)
+	{
+		results[i] = (char*) calloc(200, sizeof(char));
+	}	
+	
+	//loop through file and gather info	
+	int counter = 0;
+	while((fgets(buffer, 199, mem) != NULL))
+	{
+		//break if end of file
+		if(feof(mem))
+		{
+			break;
+		}
+		//parse line and add to array
+		char* temp;
+		char* token;
+		token = strtok_r(buffer, " ", &temp);
+		while(token != NULL)
+		{
+			if(token[strlen(token) - 1] == '\n')
+			{
+				token[strlen(token) - 1] = '\0';
+			}
+			memcpy(results[counter], token, strlen(token)+1);
+			counter++;
+			token = strtok_r(NULL, " ", &temp);
+		}
+	}
+	fclose(mem);
+
+	//cat all the stuff
+	strcpy(meminfoJson, "{\"MemTotal\": \"");
+	strcat(meminfoJson, results[1]);
+	strcat(meminfoJson, "\", \"MemFree\": \"");
+	strcat(meminfoJson, results[4]);
+	strcat(meminfoJson, "\", \"Buffers\": \"");
+	strcat(meminfoJson, results[7]);
+	strcat(meminfoJson, "\", \"Cached\": \"");
+	strcat(meminfoJson, results[10]);
+	strcat(meminfoJson, "\", \"SwapCached\": \"");
+	strcat(meminfoJson, results[13]);
+	strcat(meminfoJson, "\", \"Active\": \"");
+	strcat(meminfoJson, results[16]);
+	strcat(meminfoJson, "\", \"Inactive\": \"");
+	strcat(meminfoJson, results[19]);
+	strcat(meminfoJson, "\", \"Active(anon)\": \"");
+	strcat(meminfoJson, results[22]);
+	strcat(meminfoJson, "\", \"Inactive(anon)\": \"");
+	strcat(meminfoJson, results[25]);
+	strcat(meminfoJson, "\", \"Active(file)\": \"");
+	strcat(meminfoJson, results[28]);
+	strcat(meminfoJson, "\", \"Inactive(file)\": \"");
+	strcat(meminfoJson, results[31]);
+	strcat(meminfoJson, "\", \"Unevictable\": \"");
+	strcat(meminfoJson, results[34]);
+	strcat(meminfoJson, "\", \"Mlocked\": \"");
+	strcat(meminfoJson, results[37]);
+	strcat(meminfoJson, "\", \"SwapTotal\": \"");
+	strcat(meminfoJson, results[40]);
+	strcat(meminfoJson, "\", \"SwapFree\": \"");
+	strcat(meminfoJson, results[43]);
+	strcat(meminfoJson, "\", \"Dirty\": \"");
+	strcat(meminfoJson, results[46]);
+	strcat(meminfoJson, "\", \"Writeback\": \"");
+	strcat(meminfoJson, results[49]);
+	strcat(meminfoJson, "\", \"AnonPages\": \"");
+	strcat(meminfoJson, results[52]);
+	strcat(meminfoJson, "\", \"Mapped\": \"");
+	strcat(meminfoJson, results[55]);
+	strcat(meminfoJson, "\", \"Shmem\": \"");
+	strcat(meminfoJson, results[58]);
+	strcat(meminfoJson, "\", \"Slab\": \"");
+	strcat(meminfoJson, results[61]);
+	strcat(meminfoJson, "\", \"SReclaimable\": \"");
+	strcat(meminfoJson, results[64]);
+	strcat(meminfoJson, "\", \"SUnreclaim\": \"");
+	strcat(meminfoJson, results[67]);
+	strcat(meminfoJson, "\", \"KernelStack\": \"");
+	strcat(meminfoJson, results[70]);
+	strcat(meminfoJson, "\", \"PageTables\": \"");
+	strcat(meminfoJson, results[73]);
+	strcat(meminfoJson, "\", \"NFS_Unstable\": \"");
+	strcat(meminfoJson, results[76]);
+	strcat(meminfoJson, "\", \"Bounce\": \"");
+	strcat(meminfoJson, results[79]);
+	strcat(meminfoJson, "\", \"WritebackTmp\": \"");
+	strcat(meminfoJson, results[82]);
+	strcat(meminfoJson, "\", \"CommitLimit\": \"");
+	strcat(meminfoJson, results[85]);
+	strcat(meminfoJson, "\", \"Committed_AS\": \"");
+	strcat(meminfoJson, results[88]);
+	strcat(meminfoJson, "\", \"VmallocTotal\": \"");
+	strcat(meminfoJson, results[91]);
+	strcat(meminfoJson, "\", \"VmallocUsed\": \"");
+	strcat(meminfoJson, results[94]);
+	strcat(meminfoJson, "\", \"VmallocChunk\": \"");
+	strcat(meminfoJson, results[97]);
+	strcat(meminfoJson, "\", \"HardwareCorrupted\": \"");
+	strcat(meminfoJson, results[100]);
+	strcat(meminfoJson, "\", \"AnonHugePages\": \"");
+	strcat(meminfoJson, results[103]);
+	strcat(meminfoJson, "\", \"HugePages_Total\": \"");
+	strcat(meminfoJson, results[106]);
+	strcat(meminfoJson, "\", \"HugePages_Free\": \"");
+	strcat(meminfoJson, results[108]);
+	strcat(meminfoJson, "\", \"HugePages_Rsvd\": \"");
+	strcat(meminfoJson, results[110]);
+	strcat(meminfoJson, "\", \"HugePages_Surp\": \"");
+	strcat(meminfoJson, results[112]);
+	strcat(meminfoJson, "\", \"Hugepagesize\": \"");
+	strcat(meminfoJson, results[114]);
+	strcat(meminfoJson, "\", \"DirectMap4k\": \"");
+	strcat(meminfoJson, results[117]);
+	strcat(meminfoJson, "\", \"DirectMap2M\": \"");
+	strcat(meminfoJson, results[120]);
+	strcat(meminfoJson, "\", \"DirectMap1G\": \"");
+	strcat(meminfoJson, results[123]);
+	strcat(meminfoJson, "\"}");
+
+}
+
+/*
+* Returns a JSON string representing the loadavg from /proc
+*/
+void get_loadavg(char * loadavgJson)
+{
+    //open the file and read the line
+    FILE *cpu = fopen("/proc/loadavg", "rb");
+    char buffer[100];
+    fgets(buffer, 99, cpu);
+    fclose(cpu);
+
+    //set up results array for parsing
+    int i = 0;
+    char** results = (char**) calloc(5, sizeof(char*));
+    for (; i < 5; i++)
+    {
+        results[i] = (char*) calloc(20, sizeof(char));
+    }
+
+    //break the array into chunks
+    char* temp;
+    char* token;
+    token = strtok_r(buffer, " ", &temp);
+    int counter = 0;
+    while(token != NULL)
+    {
+        memcpy(results[counter], token, strlen(token)+1);
+        counter++;
+        token = strtok_r(NULL, " ", &temp);
+    }
+
+    //get total and used threads
+    char total_threads[10];
+    char used_threads[10];
+    int j = 0;
+    int k = 0;
+
+    while(results[3][j] != '/')
+    {
+        used_threads[j] = results[3][j];
+        j++;
+    }
+    used_threads[j++] = '\0';
+    while(results[3][j] != '\0')
+    {
+        total_threads[k] = results[3][j];
+        j++;
+        k++;
+    }
+    total_threads[k] = '\0';
+
+    strcpy(loadavgJson, "{\"total_threads\": \"");
+    strcat(loadavgJson, total_threads);
+    strcat(loadavgJson, "\", \"loadavg\": [\"");
+    strcat(loadavgJson, results[0]);
+    strcat(loadavgJson, "\", \"");
+    strcat(loadavgJson, results[1]);
+    strcat(loadavgJson, "\", \"");
+    strcat(loadavgJson, results[2]);
+    strcat(loadavgJson, "\"], \"running_threads\": \"");
+    strcat(loadavgJson, used_threads);
+    strcat(loadavgJson, "\"}");
+}
+
+/*
+* Validates a callback argument to make sure it only contains valid characters
+*/
+bool validateCallback(char* args)
+{
+	int len = strlen(args);
+	int i = 0;
+	for(; i < len; i++)
+	{
+		if(!(args[i] == 'a' || args[i] == 'b' || args[i] == 'c' || args[i] == 'd' || 
+			args[i] == 'e' || args[i] == 'f' || args[i] == 'g' || args[i] == 'h' || 
+			args[i] == 'i' || args[i] == 'j' || args[i] == 'k' || args[i] == 'l' || 
+			args[i] == 'm' || args[i] == 'n' || args[i] == 'o' || args[i] == 'p' || 
+			args[i] == 'q' || args[i] == 'r' || args[i] == 's' || args[i] == 't' || 
+			args[i] == 'u' || args[i] == 'v' || args[i] == 'w' || args[i] == 'x' || 
+			args[i] == 'y' || args[i] == 'z' || args[i] == '1' || args[i] == '2' || 
+			args[i] == '3' || args[i] == '4' || args[i] == '5' || args[i] == '6' || 
+			args[i] == '7' || args[i] == '8' || args[i] == '9' || args[i] == '0' ||
+			args[i] == '_' || args[i] == '.' || args[i] == 'A' || args[i] == 'B' || 
+			args[i] == 'C' || args[i] == 'D' || args[i] == 'E' || args[i] == 'F' || 
+			args[i] == 'G' || args[i] == 'H' || args[i] == 'I' || args[i] == 'J' ||
+			args[i] == 'K' || args[i] == 'L' ||	args[i] == 'M' || args[i] == 'N' ||
+			args[i] == 'O' || args[i] == 'P' || args[i] == 'Q' || args[i] == 'R' || 
+			args[i] == 'S' || args[i] == 'T' ||	args[i] == 'U' || args[i] == 'V' ||
+			args[i] == 'W' || args[i] == 'X' || args[i] == 'Y' || args[i] == 'Z'))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+/*
+* Busy wait for runloop
+*/ 
+void *runloop(void *vargp)
+{
+    Pthread_detach(pthread_self());
+
+	pthread_mutex_lock(&loopCounterMutex);
+	runningLoops++;
+	pthread_mutex_unlock(&loopCounterMutex);
+
+	struct timeval start, current;
+	gettimeofday(&start, NULL);
+	time_t startSec = start.tv_sec;
+	
+	gettimeofday(&current, NULL);
+	time_t currSec = current.tv_sec;
+	
+	while(currSec - startSec < 16)
+	{
+		gettimeofday(&current, NULL);
+		currSec = current.tv_sec;
+	}
+	pthread_mutex_lock(&loopCounterMutex);
+	runningLoops--;
+	pthread_mutex_unlock(&loopCounterMutex);	
+}
+
+/*
+Checks to see if we are supposed to use the callback abilities of the server
+*/
+char * serve_callback(char * uri)
+{
+		char * tempQ = strstr(uri, "?callback=");
+		char * tempA = strstr(uri, "&callback=");
+		int i = 0;
+		int j = 1;
+		char * info;
+		if (tempQ != NULL)
+		{
+			
+		
+			while(tempQ[i] != '=')
+			{
+				i++;
+			}
+			i++;
+			while(tempQ[j] != '&')
+			{
+				if(tempQ[j + 1] == '\0')
+				{
+					j++;
+					break;
+				}
+				j++;
+			}
+			info = strndup(tempQ + i, j - i);
+		}
+		else if (tempA != NULL)
+		{
+
+			while(tempA[i] != '=')
+			{
+				i++;
+			}
+			i++;
+			while(tempA[j] != '&')
+			{
+				if(tempA[j + 1] == '\0')
+				{
+					j++;
+					break;
+				}
+				j++;
+			}
+
+			info = strndup(tempA + i, j - i);
+		}
+		return info;
+}
+
+/*
+Gets the port out of the command line arguments
+*/
+int get_port(int argc, char ** argv)
+{
+
+	int l = 0;
+	//while we aren't at the end of the argument list
+	while (l < argc)
+	{
+		//if the -R switch is in the argument list
+		if (strncmp(argv[l], "-p", 2) == 0)
+		{
+			l++;
+			//append the path to the root directory
+			return atoi(argv[l]);
+		}
+		l++;
+	}
+	return -1;
+
+}
+
+/*
+Gets the relay address out of the command line arguments, returns if it is a relay mode
+*/
+int get_relay(int argc, char ** argv, char * relayHost, int * relayPort)
+{
+	int l = 0;
+	//while we aren't at the end of the argument list
+	while (l < argc)
+	{
+		//if the -r switch is in the argument list
+		if (strncmp(argv[l], "-r", 2) == 0)
+		{
+
+			l++;
+			//we are on the relayHost string
+			int f = 0;
+			for (; argv[l][f] != ':'; f++)
+			{
+				relayHost[f] = argv[l][f];
+			}
+			f++;
+			relayHost[f] = '\0';
+			//get the relayPort
+			*relayPort = atoi(argv[l]+f);
+	
+			return 1;
+		}
+		l++;
+	}
+	return 0;
+}
+
+/*
+Gets the root directory out of the program parameters
+*/
+char * get_root(int argc, char ** argv)
+{
+	int l = 0;
+	//while we aren't at the end of the argument list
+	while (l < argc)
+	{
+		//if the -R switch is in the argument list
+		if (strncmp(argv[l], "-R", 2) == 0)
+		{
+			l++;
+			//append the path to the root directory
+			return argv[l];
+		}
+		l++;
+	}
+	return "";
+}
+
+/*
+* Returns size of alloc list
+*/
+int allocAnon()
+{
+	int listSz;
+	memAnon* mem = malloc(sizeof(memAnon));
+	mem->memAddr = Mmap(0, 1024*1024*64, PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+	memset(mem->memAddr,0, 1024*1024*64);
+	pthread_mutex_lock(&allocListMutex);
+    list_push_front(&memList, &mem->elem);
+	listSz = list_size(&memList);
+	pthread_mutex_unlock(&allocListMutex);
+	return listSz;    
+}
+
+/*
+* returns 0 if list is empty, otherwise size blocks left if something was unmapped
+*/
+int freeAnon()
+{	
+	int listSz = 0;
+	pthread_mutex_lock(&allocListMutex);
+	if (list_empty(&memList))
+	{	
+		pthread_mutex_unlock(&allocListMutex);
+		return listSz;
+	}
+	else
+	{
+		struct list_elem * e = list_pop_back(&memList);
+		memAnon * curr = list_entry(e, memAnon, elem);
+		listSz = list_size(&memList);
+		pthread_mutex_unlock(&allocListMutex);
+		Munmap(curr->memAddr, 1024*1024*64);
+		free(curr);
+	}
+	return listSz;
+}
+
+/*
+Checks to see if we are supposed to call the loadavg function and show that as a result
+*/
+int check_load(char * uri)
+{
+	if (strstr(uri, "loadavg"))
+	{
+		
+		if (strstr(uri, "junk"))
+		{
+			return 0;
+		}
+		
+		return 1;
+	}
+	return 0;
+}
+
+/*
+Checks to see if we are supposed to call the meminfo function and show that as a result
+*/
+int check_mem(char * uri)
+{
+	if (strstr(uri, "meminfo"))
+	{
+		
+		if (strstr(uri, "junk"))
+		{
+			return 0;
+		}
+		
+		return 1;
+	}
+	return 0;
+
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <vbox hflex="1" sclass="mainbox">
+        <vbox hflex="1" sclass="level1box">
+            At the top-left of the toolbar, you can add a number of shortcuts for
+            your users.  These must be complete URLs, such as http://libx.org.
+            To change the order in which the links will be displayed, drag and drop
+            the numbers corresponding to the entries in the desired order.
+		</vbox>
+
+        <vbox hflex="1" id="linksController" use="org.libx.editionbuilder.LinksController" sclass="level2box">
+            <vbox hflex="1" id="urlbox" />
+            <button label="Add Link" onClick="linksController.newLink()" />
+            <hbox hflex="1" id="addHomePageLinkBox" />
+            <zscript>
+                linksController.initialize(urlbox, addHomePageLinkBox);
+            </zscript>
+        </vbox>
+    </vbox>
+</zk>

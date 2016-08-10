@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+
+  <title>Sysstat Widgets Demo</title>
+
+  <!-- To use the widgets in your page, include the line below 
+       The widgets are <div> and <span> elements with classes memstat
+       and loadavg, respectively.  Change the 'url' to point to your
+       web service.
+    -->
+  <script language="javascript" type="text/javascript" src="http://courses.cs.vt.edu/~cs3214/fall2009/sysstatwebservice/widget/sysstatwidgets.js">
+  </script>
+</head>
+
+<body>
+  <p>This page shows you how to use the two widgets to display the 
+  physical memory
+  usage and the overall CPU load average of a machine that runs your 
+  web service.  Adjust the 'url' attribute in the respective &lt;div&gt;
+  and &lt;span&gt; elements.</p>
+<!--
+  <p>My implementation of the web service is currently running 
+  on cs3214.cs.vt.edu.  Usually, this machine is not loaded, so the
+    load average plot will stay near zero.
+  </p>
+  <p>
+    
+  <script>var count = 0;</script>
+  <a href="#" onclick="javascript:if (count++ > 4) alert('That\'s enough, thank you.'); else (new Image()).src='http://cs3214.cs.vt.edu/fall2009/runloop.php?_='+new Date();">Click here once</a> to run a 15 second loop on this machine.
+  </p>
+-->
+
+  <table>
+    <tr>
+      <th>Memory</th>
+
+      <th>CPU Load Average</th>
+    </tr>
+
+    <tr>
+      <td>
+        <div id="meminfo" url="http://cs3214.cs.vt.edu:9051/cs3214" update="5000" 
+          style="margin-top:20px; margin-left:20px; width:180px; height:400px;">
+        </div>
+      </td>
+
+      <td>
+        <div id="loadavg" url="http://cs3214.cs.vt.edu:9051/cs3214" update="2500" 
+          style="margin-top:20px; margin-left:20px; width:600px; height:400px;">
+            Loading, please wait...
+        </div>
+      </td>
+    </tr>
+  </table>
+
+<p>A text-only version of the load average widget: 
+  <span class="loadavg-text" url="http://cs3214.cs.vt.edu:9051/cs3214" update="4000"
+        style="font-weight: bold">
+  </span>
+</p>
+</body>
+</html>

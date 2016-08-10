@@ -1,0 +1,427 @@
+Evan Lobeto
+elobeto
+
+1.
+bugs1/-O0
+Detected by compiler: yes
+	bugs1.c: In function 'main':
+	bugs1.c:11: warning: 'uninitialized' is used uninitialized in this function
+	bugs1.c: In function 'main':
+	bugs1.c:11: warning: 'uninitialized' is used uninitialized in this function
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs1.O0"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 6 from 6)"
+
+bugs1/-O2
+Detected by compiler: yes
+	bugs1.c: In function 'main':
+	bugs1.c:11: warning: 'uninitialized' is used uninitialized in this function
+	bugs1.c: In function 'main':
+	bugs1.c:11: warning: 'uninitialized' is used uninitialized in this function
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs1.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs2/-O0
+Detected by compiler: yes
+	bugs2.c: In function 'returnlocal_obvious':
+	bugs2.c:10: warning: function returns address of local variable
+	bugs2.c: In function 'returnlocal_obvious':
+	bugs2.c:10: warning: function returns address of local variable
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs2.O0"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 6 errors from 4 contexts (suppressed: 6 from 6)"
+
+bugs2/-O2
+Detected by compiler: yes
+	bugs2.c: In function 'returnlocal_obvious':
+	bugs2.c:10: warning: function returns address of local variable
+	bugs2.c: In function 'returnlocal_obvious':
+	bugs2.c:10: warning: function returns address of local variable
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs2.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs3/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs3.O0"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 6 errors from 4 contexts (suppressed: 6 from 6)"
+
+bugs3/-O2
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs3.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs4/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs4.O0"
+	"HEAP SUMMARY:"
+	"4 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+bugs4/-O2
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs4.O2"
+	"HEAP SUMMARY:"
+	"4 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+bugs5/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs5.O0"
+	"Invalid write of size 4"
+	"Invalid write of size 4"
+	"HEAP SUMMARY:"
+	"40 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 6 from 6)"
+
+bugs5/-O2
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs5.O2"
+	"Invalid write of size 4"
+	"Invalid write of size 4"
+	"HEAP SUMMARY:"
+	"40 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 6 from 6)"
+
+bugs6/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs6.O0"
+	"HEAP SUMMARY:"
+	"16 bytes in 1 blocks are definitely lost in loss record 1 of 2"
+	"16 bytes in 1 blocks are definitely lost in loss record 2 of 2"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+bugs6/-O2
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs6.O2"
+	"HEAP SUMMARY:"
+	"16 bytes in 1 blocks are definitely lost in loss record 1 of 2"
+	"16 bytes in 1 blocks are definitely lost in loss record 2 of 2"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+bugs7/-O0
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs7.O0"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs7/-O2
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs7.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs8/-O0
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs8.O0"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 6 from 6)"
+
+bugs8/-O2
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs8.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 6 from 6)"
+
+bugs9/-O0
+Detected by compiler: yes
+	bugs9.c: In function 'main':
+	bugs9.c:15: warning: array subscript is below array bounds
+	bugs9.c:15: warning: 'buf' is used uninitialized in this function
+	bugs9.c:13: note: 'buf' was declared here
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs9.O0"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 6 from 6)"
+
+bugs9/-O2
+Detected by compiler: yes
+	bugs9.c: In function 'main':
+	bugs9.c:15: warning: array subscript is below array bounds
+	bugs9.c:15: warning: 'buf' is used uninitialized in this function
+	bugs9.c:13: note: 'buf' was declared here
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs9.O2"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 6 from 6)"
+
+bugs10/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs10.O0"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"4 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 6 from 6)"
+
+bugs10/-O2
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs10.O2"
+	"Use of uninitialised value of size 8"
+	"HEAP SUMMARY:"
+	"4 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"Use --track-origins=yes to see where uninitialised values come from"
+	"ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 6 from 6)"
+
+bugs11/-O0
+Detected by compiler: yes
+	bugs11.c: In function 'main':
+	bugs11.c:13: warning: array subscript is above array bounds
+	bugs11.c:14: warning: array subscript is below array bounds
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs11.O0"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs11/-O2
+Detected by compiler: yes
+	bugs11.c: In function 'main':
+	bugs11.c:13: warning: array subscript is above array bounds
+	bugs11.c:14: warning: array subscript is below array bounds
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs11.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs14/-O0
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs14.O0"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs14/-O2
+Detected by compiler: no
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs14.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs15/-O0
+Detected by compiler: yes
+	bugs15.c: In function 'main':
+	bugs15.c:18: warning: unused variable 'cushion'
+	bugs15.c: In function 'main':
+	bugs15.c:18: warning: unused variable 'cushion'
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs15.O0"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs15/-O2
+Detected by compiler: yes
+	bugs15.c: In function 'main':
+	bugs15.c:18: warning: unused variable 'cushion'
+	bugs15.c: In function 'main':
+	bugs15.c:18: warning: unused variable 'cushion'
+Detected by valgrind: no
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs15.O2"
+	"HEAP SUMMARY:"
+	"All heap blocks were freed -- no leaks are possible"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)"
+
+bugs16/-O0
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs16.O0"
+	"Invalid write of size 8"
+	"HEAP SUMMARY:"
+	"8 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+bugs16/-O2
+Detected by compiler: no
+Detected by valgrind: yes
+	"Memcheck, a memory error detector"
+	"Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al."
+	"Using Valgrind-3.5.0 and LibVEX; rerun with -h for copyright info"
+	"Command: ./bugs16.O2"
+	"Invalid write of size 8"
+	"HEAP SUMMARY:"
+	"8 bytes in 1 blocks are definitely lost in loss record 1 of 1"
+	"LEAK SUMMARY:"
+	"For counts of detected and suppressed errors, rerun with: -v"
+	"ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 6 from 6)"
+
+2.
+Judging from the headpdump, the JDK ByteArrayOutputStream is the root of the
+issue. At the time of failure, it takes up 94.45% of the memory.  Upon further
+investigation I found that a byte[] was filled up with 268,435,472 -1's.  I also
+found that the file src/org/libx/libappdatabase/BaseXSessionSupport.java was the only
+one that used this specific JDK.  When I inspected the file I found an infinte while
+loop in the method receive() that took a ByteArrayOutputStream formatted as an OutputStream from
+the private method receive(). Inside the loop it waited for b==0 to be true to break, 
+but this would never happen since read() returns -1 if the end of the stream of is reached. So, when 
+the end of the input is reach it will return -1 and just keep executing the loop and filling
+the array with -1 until it overflows the memory.
+
+To fix this, the condition should be changed to if b == -1.

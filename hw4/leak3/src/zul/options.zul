@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <vbox hflex="1" sclass="mainbox">
+        <hbox hflex="1" sclass="level1box">
+            LibX has a number of options that can be customized.
+            The most important options include your edition's icon and logo.
+            Before you can select the icon/logo here, you must upload a
+            suitable image file using the File Management tab.
+            <html:br />
+        </hbox>
+
+        <vbox hflex="1" sclass="level2box">
+            <grid hflex="1">
+                <columns>
+                    <column width="50%" align="left" label="Option" />
+                    <column width="50%" align="left" label="Value" />
+                </columns>
+                <rows id="optionsController" use="org.libx.editionbuilder.OptionsTabController" />
+            </grid>
+        </vbox>
+        <zscript>
+            optionsController.initialize();
+        </zscript>
+    </vbox>
+</zk>

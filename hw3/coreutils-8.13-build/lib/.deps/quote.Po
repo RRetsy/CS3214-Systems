@@ -1,0 +1,12 @@
+quote.o quote.o: ../../coreutils-8.13/lib/quote.c config.h \
+  ../../coreutils-8.13/lib/quotearg.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h \
+  ../../coreutils-8.13/lib/quote.h
+
+config.h:
+
+../../coreutils-8.13/lib/quotearg.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:
+
+../../coreutils-8.13/lib/quote.h:

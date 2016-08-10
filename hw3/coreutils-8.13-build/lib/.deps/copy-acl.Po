@@ -1,0 +1,131 @@
+copy-acl.o copy-acl.o: ../../coreutils-8.13/lib/copy-acl.c config.h \
+  ../../coreutils-8.13/lib/acl.h /usr/include/sys/types.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-64.h /usr/include/bits/types.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h \
+  /usr/include/bits/typesizes.h time.h /usr/include/time.h \
+  /usr/include/endian.h /usr/include/bits/endian.h sys/select.h \
+  /usr/include/sys/select.h /usr/include/bits/select.h \
+  /usr/include/bits/sigset.h /usr/include/bits/time.h \
+  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
+  sys/stat.h /usr/include/xlocale.h /usr/include/sys/stat.h \
+  /usr/include/bits/stat.h ../../coreutils-8.13/lib/acl-internal.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h stdlib.h \
+  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+  /usr/include/bits/waitstatus.h alloca.h /usr/include/sys/acl.h \
+  /usr/include/acl/libacl.h ../../coreutils-8.13/lib/error.h \
+  ../../coreutils-8.13/lib/quote.h /usr/include/errno.h \
+  /usr/include/bits/errno.h /usr/include/linux/errno.h \
+  /usr/include/asm/errno.h /usr/include/asm-x86_64/errno.h \
+  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+  ../../coreutils-8.13/lib/gettext.h /usr/include/libintl.h locale.h \
+  /usr/include/locale.h /usr/include/bits/locale.h string.h \
+  /usr/include/string.h /usr/include/bits/string.h \
+  /usr/include/bits/string2.h
+
+config.h:
+
+../../coreutils-8.13/lib/acl.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/include/bits/types.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:
+
+/usr/include/bits/typesizes.h:
+
+time.h:
+
+/usr/include/time.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+sys/select.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+sys/stat.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
+
+../../coreutils-8.13/lib/acl-internal.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdbool.h:
+
+stdlib.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+alloca.h:
+
+/usr/include/sys/acl.h:
+
+/usr/include/acl/libacl.h:
+
+../../coreutils-8.13/lib/error.h:
+
+../../coreutils-8.13/lib/quote.h:
+
+/usr/include/errno.h:
+
+/usr/include/bits/errno.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/asm/errno.h:
+
+/usr/include/asm-x86_64/errno.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+../../coreutils-8.13/lib/gettext.h:
+
+/usr/include/libintl.h:
+
+locale.h:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:
+
+string.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:

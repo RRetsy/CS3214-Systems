@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Unit test for UserInfo sign-on/sign-off box.
+
+  $Id: uitest.zul,v 1.8 2010/06/03 19:15:14 vsony7 Exp $
+
+-->
+
+<window xmlns:html="http://www.w3.org/1999/xhtml" id="root" use="org.libx.editionbuilder.MainWindowController">
+    <style src="../styles/editionbuilder.css" />
+    <script type="text/javascript" src="utility.js" />
+
+    <zscript>
+    	import org.libx.editionbuilder.*;
+    </zscript>
+
+	<?component name="signonbox" macro-uri="signon.zul" ?>
+
+	<html:h2 align="center">
+		LibX UserInfo test
+	</html:h2>
+	This test should demonstrate the log-on/log-off,
+	user registration, and password reminder functionality.
+	    <hbox hflex="1" style="table-layout:fixed" sclass="level1box">
+			<hbox hflex="2"
+            <signonbox />
+            </hbox>
+
+            <vbox hflex="3">
+                <label id="signonStatus" />
+            </vbox>
+            <zscript>
+                UserInfo.getUserInfo().addSignOnListener(new UserInfo.SignOnListener() {
+                    public void onSignOn(String email) {
+                        signonStatus.value = "User '" + email + "' signed on.";
+                        announcement.visible = true;
+                    }
+                });
+
+                UserInfo.getUserInfo().addSignOffListener(new UserInfo.SignOffListener() {
+                    public void onSignOff() {
+                        signonStatus.value = "User signed off";
+                    }
+                });
+            </zscript>
+   		</hbox>
+
+	<!-- announcement box -->
+	<!--
+		action="onmouseover: anima.slideDown(#{t}); onmouseout: anima.slideUp(#{t})"
+	-->
+	<hbox visible="true" id="announcement" width="40%" sclass="level2box">
+        <vbox hflex="1" sclass="level1box">
+	        <hbox hflex="2">
+		        <toolbarbutton id="hideButton" label="(Hide)">
+			        <attribute name="onClick">
+			        v = innerAnnouncement.visible;
+			        innerAnnouncement.visible = !v;
+			        hideButton.setLabel(v ? "(Show)" : "(Hide)");
+			        </attribute>
+		        </toolbarbutton>
+	        </hbox>
+	        <hbox hflex="18">
+		        <include action="onshow: anima.appear(#{self}); onhide: anima.dropOut(#{self})" 
+		        id="innerAnnouncement" src="announcement.html" />
+	        </hbox>
+	    </vbox>
+	</hbox>
+
+	<vbox height="5px" />
+	<vbox id="statusbox"/>
+	<zscript>
+		root.initialize(statusbox);
+	</zscript>
+</window>
+<!-- vim: sw=2
+-->

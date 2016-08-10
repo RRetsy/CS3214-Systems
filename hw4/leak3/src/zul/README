@@ -1,0 +1,4 @@
+To compile the controller classes referenced in the .zul files do the following:
+
+../scripts/build-castor.sh
+../scripts/build-controller.sh

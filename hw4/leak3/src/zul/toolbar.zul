@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  The mockup toolbar
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+	<html:p>
+		Toolbar mockup:
+	</html:p>
+	<toolbar id="mockupToolbar" use="org.libx.editionbuilder.ToolbarController">
+		<menubar>
+			<menu id="libxmenu" label="No Edition Loaded">
+				<menupopup>
+					<menuseparator id="libxmenuseparator" />
+					<menu label="Display Preferences...">
+				    <menupopup id="libx.displaypref">
+				    <menuitem id="libx.newtabswitch" label="Display results in new tab and switch to it" />
+				    <menuitem id="libx.newtab" label="Display results in new tab" />
+				    <menuitem id="libx.newwindow" label="Display results in new window" />
+				    <menuitem id="libx.sametab" label="Display results in same tab" />
+			    </menupopup>
+		    </menu>
+		    <menuitem id="libx-about" label="About" />
+		    </menupopup>
+		    </menu>
+		</menubar>
+	</toolbar>
+	<zscript>
+	    mockupToolbar.initialize(libxmenu);
+	</zscript>
+</zk>
+<!-- vim: sw=2
+-->

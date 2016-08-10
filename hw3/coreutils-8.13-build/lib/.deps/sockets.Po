@@ -1,0 +1,6 @@
+sockets.o sockets.o: ../../coreutils-8.13/lib/sockets.c config.h \
+  ../../coreutils-8.13/lib/sockets.h
+
+config.h:
+
+../../coreutils-8.13/lib/sockets.h:

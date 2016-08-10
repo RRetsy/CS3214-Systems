@@ -1,0 +1,1260 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:libx="http://libx.org/xml/libx2">
+  <id>http://tjwebb.cs.vt.edu/libx2/feed/</id>
+  <title>LibX 2.0 Feed</title>
+  <author>
+    <name>LibX Team</name>
+    <uri>http://libx.org</uri>
+    <email>libx.org@gmail.com</email>
+  </author>
+  <entry>
+    <id>2</id>
+    <title>Link Google by Keyword</title>
+    <updated>2009-02-22T17:26:42Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:libx="http://libx.org/xml/libx2" src="3"/>
+      <libx:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:libx="http://libx.org/xml/libx2" src="4"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>3</id>
+    <title>Extract Keyword from Google</title>
+    <updated>2009-08-14T00:16:56Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/getgooglekeyword.mod</content>
+    <libx:module>
+      <libx:include>/google(\.[a-z]+)?\.[a-z]+\/search.*q=/i</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>/* Find a suitable location to include a cue */
+var nArray = $("div div[id='prs'] b");
+if (nArray.length == 0)
+    nArray = $("tr td span[id='sd']"); // old, before Aug 2008
+
+var n = nArray[0];
+
+// Extract search terms
+var searchterms = null;
+try {
+  // FF 3.0 and before
+  searchterms = unsafeWindow.document.gs.q.value;
+} catch ( e ) {
+  searchterms = null;
+}
+
+if ( searchterms == null ) {
+  // FF 3.5
+  searchterms = window.wrappedJSObject.document.gs.q.value;
+}
+
+libx.space.write({
+    keyword: searchterms,
+    position: n.parentNode.lastChild
+});
+
+// vim: set syntax=javascript</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>4</id>
+    <title>Link by Keyword</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/searchbykeyword.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ keyword: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>// Create an old-style LibX cue with a keyword search on the
+// primary catalog, insert it before tuple.position and animate it
+var cue = new libx.cues.CatalogCue('Y', tuple.keyword);
+cue.insertBefore(tuple.position);
+cue.animate();</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>5</id>
+    <title>Put Google Book results into Addison</title>
+    <updated>2009-02-23T10:12:15Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="6"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="7"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>6</id>
+    <title>Search Google Books while searching Addison</title>
+    <updated>2009-02-23T10:12:15Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/searchgooglebooks.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/addison\.vt\.edu\/search/</libx:include>
+      <libx:body>var url = String(window.location);
+var m = url.match(/http:\/\/addison\.vt\.edu\/search\/Y\?SEARCH=([^&amp;]*)&amp;/);
+if (m == null)
+    var m = url.match(/http:\/\/addison\.vt\.edu\/search.*searchtype=Y.*searcharg=([^&amp;]*)&amp;/);
+if (m == null)
+    var m = url.match(/http:\/\/addison\.vt\.edu\/search\/Y\?([^&amp;]*)&amp;/);
+
+if (m == null) return;
+var searchterm = m[1];
+
+/* Look up search term in Google books, and display results as notification */
+libx.cache.defaultMemoryCache.get({
+    url     : 'http://ajax.googleapis.com/ajax/services/search/books?v=1.0&amp;q=' + searchterm,
+
+    success : function (resultjson) {
+        var gbs = libx.utils.json.parse(resultjson);
+        if (gbs.responseStatus != 200) return;
+
+        var results = gbs.responseData.results;
+        var display = "&lt;p&gt;Google Book Search reports "
+            + gbs.responseData.cursor.estimatedResultCount
+            + " hits for this search. "
+            + "Showing first " + results.length + ":&lt;/p&gt;";
+
+        for (var i = 0; i &lt; results.length; i++) {
+            var r = results[i];
+            var title = r.titleNoFormatting;
+
+            /* Search primary catalog for title */
+            var cat = libx.edition.catalogs.primary;
+            var titleSearch = cat.makeTitleSearch(title);
+
+            var thumbnail = /nocover.png/.test(r.tbUrl) ?
+                "" : "&lt;img style='align:top' src='" + r.tbUrl + "'/&gt;";
+
+            display += "&lt;table&gt;&lt;tr&gt;&lt;td&gt;" + thumbnail + "&lt;/td&gt;"
+                + "&lt;td style='color:white' valign='top'&gt;"
+                + "&lt;a href='" + titleSearch + "'&gt;" + title + "&lt;/a&gt;"
+                + "&lt;br /&gt;by " + r.authors + " (" + r.publishedYear + ")"
+                + "&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;";
+        }
+
+        libx.space.write({
+            notify: display
+        });
+    }
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>8</id>
+    <title>Link Amazon By ISBN</title>
+    <updated>2009-02-20T01:20:00Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="9"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="10"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="11"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>9</id>
+    <title>Amazon ISBN Scraper</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/getamazonisbn.mod</content>
+    <libx:module>
+      <libx:include>/amazon\.com\//</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>/*
+ * Find the ISBN to which an item refers on Amazon
+ */
+var isbnNodeArray = $("b:contains('ISBN')");
+var isbnVal = isbnNodeArray[0].nextSibling.nodeValue;
+
+if (isbnVal == null)
+    return;
+
+var isbn = libx.utils.stdnumsupport.isISBN(isbnVal, false);
+if (isbn == null)
+    return;
+
+libx.space.write({
+    isbn : isbn
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>10</id>
+    <title>Find Position of Title in Amazon</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/getamazontitleposition.mod</content>
+    <libx:module>
+      <libx:include>/amazon\.com\//</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>/* Find where the book title is displayed in Amazon */
+var booktitleNodeArray = $("div.buying &gt; h1.parseasinTitle &gt; span#btAsinTitle");
+if (booktitleNodeArray.length == 0) {
+    // amazon.ca uses this
+    var booktitleNodeArray = $("div.buying &gt; h1.parsesans &gt; span#btAsinTitle");
+}
+
+libx.space.write({
+    position : booktitleNodeArray[0]
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>11</id>
+    <title>Link By ISBN</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/searchbyisbn.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ isbn: libx.space.WILDCARD }</libx:guardedby>
+      <libx:guardedby>{ position: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>/* Insert an old-style cue that searches by ISBN */
+var cue = new libx.cues.CatalogCue('i', tuple.isbn);
+cue.insertBefore(tuple.position);
+cue.animate();</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>12</id>
+    <title>LibX Core Autolinking</title>
+    <updated>2009-06-10T14:58:49Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:package>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="13"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="15"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="20"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="39"/>
+    </libx:package>
+  </entry>
+  <entry>
+    <id>13</id>
+    <title>Autolink ISBNs</title>
+    <updated>2009-10-14T23:08:27Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="14"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="16"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="17"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>14</id>
+    <title>Find ISBNs on Page</title>
+    <updated>2009-10-14T23:08:46Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/findisbn.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:regexptexttransformer>/\b((97[89])?((-)?\d(-)?){9}[\dx])\b/ig</libx:regexptexttransformer>
+      <libx:body>libx.log.write ("findisbn.mod invoked");
+// -- Validation
+// check to see if the isbn we found could be a phone number
+var usPhoneNumber = /\d{3}-\d{3}-?\d{4}/ig;
+if (usPhoneNumber.test(match[0])) {
+    return null;
+}
+var isbn = libx.utils.stdnumsupport.isISBN(match[1], false);
+if (isbn == null) {
+    return null;
+}
+
+// -- Create Node
+var newNode = textNode.ownerDocument.createTextNode(match[0]);
+
+// -- Search Catalog, Get URL
+var cat   = libx.edition.catalogs.primary;
+var url   = cat.makeSearch('i', isbn);
+var name  = cat.name;
+
+/* Postcondition:
+ * Produce a tuple containing the new node 'node' that we want linked, the
+ * 'url' to link to, and a tooltip object.
+ */
+var output =
+{
+  node:   newNode,
+  url:    url,
+  query:    isbn,
+  tooltip:
+  {
+    ondemand: true,
+    value:    null
+  },
+  type:   "ISBN",
+  catalog:  name
+};
+return [ newNode, function () { libx.space.write(output); } ];</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>15</id>
+    <title>Autolink PMIDs</title>
+    <updated>2009-03-30T01:48:09Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="18"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="19"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>16</id>
+    <title>Create AutoLinks Around Text</title>
+    <updated>2009-06-10T14:58:49Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/autolinktext.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ node: libx.space.WILDCARD, url: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>/* Module: autolinktext
+ *  This module autolinks 'node' to point to 'url'. We guard on a tuple
+ *  containing these items. If 'tooltip' is present in the tuple as well, then
+ *  we add the tooltip's 'value' to the link. If 'ondemand' is requested, then
+ *  add a listener to the node which will produce a tuple containing info
+ *  about it upon signal for consumption by whatever module is handling the
+ *  event.
+ */
+var node      = tuple.node;
+var url       = tuple.url;
+var tooltip     = tuple.tooltip;
+var ondemand    = tuple.tooltip['ondemand'];
+var tooltipValue  = tuple.tooltip['value'];
+var query     = tuple.query;
+var type      = tuple.type;
+var catalogname   = tuple.catalog;
+// if tooltipValue is not null and ondemand is false, then the tooltip is added
+// here. Otherwise, we need to add an event listener to the node
+var cue = new libx.cues.Autolink(node, url, tooltipValue);
+
+// if the user wants the tooltip to be added 'ondemand' (on a mouseover), then
+// we produce a tuple to be consumed by a module that will request the data
+// ondemand, instead of when the page loads
+if (ondemand &amp;&amp; tooltipValue === null) {
+  var alnode = cue.link;
+  var action = function () {
+    if (ondemand) {
+      ondemand = false;
+      libx.space.write(
+      {
+        alnode:   alnode,
+        tooltip:  tooltip,
+        catalog:  catalogname,
+        type:   type,
+        query:    query
+      });
+    }
+  };
+  if (alnode.addEventListener) {
+    alnode.addEventListener('mouseover', action, false);
+  }
+  else {
+    alnode.attachEvent('onmouseover', action);
+  }
+}</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>17</id>
+    <title>Add Tooltips to DOM elements</title>
+    <updated>2009-06-10T14:58:49Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/addmetadatatooltip.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ alnode: libx.space.WILDCARD, type: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>/* Module:  addmetadatatooltip
+ *  This module adds a tooltip (title attribute) to an &lt;a&gt; element, which
+ *  is determined by the tuple containing "alnode". The data that is retrieved
+ *  is determined by the "type", and the tooltip obj. If the tooltip obj
+ *  already contains the tooltip value, then add the tooltip without retrieving
+ *  any data.
+ */
+var node      = tuple.alnode;
+var type      = tuple.type;
+var ondemand    = tuple.tooltip['ondemand'];
+var tooltipValue  = tuple.tooltip['value'];
+var query     = tuple.query;
+var catalog     = tuple.catalog;
+
+// this module could be invoked simply to add a tooltip to an element, or it
+// could be invoked to perform an 'ondemand' request to get the tooltip text.
+if ((tooltipValue === null) || ondemand &amp;&amp; (type != null)) {
+  var addTooltipFunc = eval("libx.cues.add"+ type +"MetadataTooltip");
+  addTooltipFunc(node, catalog, query);
+}
+else if (tooltipValue != null) {
+  node.title = tooltipValue;
+}</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>18</id>
+    <title>Find PMIDs on Page</title>
+    <updated>2009-03-30T01:50:04Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/findpmid.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:regexptexttransformer>/\bPMID[^\d]*([1-9](\d*))\b/g</libx:regexptexttransformer>
+      <libx:body>/* Precondition:
+ *  TextTransformer has returned to us, based on the RegExpTextTransformer,
+ *    match:    contains the matched item we may want to link
+ *    textNode: text node in which our match was found
+ */
+var replacementNode = null;
+var pmid = match[0];
+
+replacementNode = textNode.ownerDocument.createTextNode(pmid);
+
+return [
+  replacementNode,
+  function () {
+    libx.space.write( {
+      purepmid:   match[1],
+      autolinkpmid: pmid,
+      position:   replacementNode
+    });
+  }
+];</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>19</id>
+    <title>Create AutoLinks Around PMIDs</title>
+    <updated>2009-03-30T01:50:04Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/linkpmid.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ autolinkpmid: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>var cat = libx.edition.catalogs.primary;
+var url = libx.edition.openurl.primary.makeOpenURLForPMID(tuple.purepmid);
+var type = "openurlpmidsearch";
+var name = cat.name;
+var cue = new libx.cues.Autolink(
+  tuple.position,
+  url,
+  libx.locale.getProperty(
+    type +".label",
+    name,
+    tuple.autolinkpmid
+  )
+);
+libx.cues.addPubmedMetadataTooltip(cue.link, name, tuple.purepmid);</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>20</id>
+    <title>Autolink ISSNs</title>
+    <updated>2009-06-10T14:58:49Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="21"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="16"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="17"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>21</id>
+    <title>Find ISSNs on Page</title>
+    <updated>2009-06-10T14:58:49Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/findissn.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:regexptexttransformer>/\b(\d{4})-(\d{3}[\dx])(?![\d\-])/ig</libx:regexptexttransformer>
+      <libx:body>/* Module: findissn
+ *  This module is guarded on a regular expression that matches on an ISSN. It
+ *  validates it, checks the edition preferences, and produces a tuple with
+ *  all the information about the ISSN that was matched.
+ */
+var issn = match[0];  // this is the actual XXXX-XXXX format number to check
+
+// -- Validation
+// check to see if the ISSN we found is a range of years
+var from = parseInt(match[1], 10);
+var to   = parseInt(match[2], 10);
+if (1000 &lt;= from &amp;&amp; 2050 &gt; from &amp;&amp; 2200 &gt; to &amp;&amp; from &lt; to) {
+  return null;
+}
+issn = libx.utils.stdnumsupport.isISSN(issn, false);
+if (issn == null) {
+  return null;
+}
+
+// -- Create Node
+var newNode = textNode.ownerDocument.createTextNode(issn);
+
+// -- Verify Preferences, get URL from catalog
+var url   = "";
+var name  = "";
+var cat   = libx.edition.catalogs.primary;
+var openurl = libx.edition.openurl.primary;
+
+if (openurl.autolinkissn == true) {
+  url   = openurl.makeOpenURLForISSN(issn);
+  name  = openurl.name;
+}
+else {
+  url   = cat.makeISSNSearch(issn);
+  name  = cat.name;
+}
+/* Postcondition:
+ * Produce a tuple containing the new node 'node' that we want linked, the
+ * 'url' to link to, and a tooltip object.
+ */
+var output =
+{
+  node:     newNode,
+  url:      url,
+  query:      issn,
+  tooltip:
+  {
+    ondemand: true,
+    value:    null
+  },
+  type:     "ISSN",
+  catalog:    name
+}
+return [ newNode, function () { libx.space.write(output); } ];</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>22</id>
+    <title>Spruce Up IMDB Visits</title>
+    <updated>2009-02-22T15:19:58Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="23"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="24"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="25"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="7"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>23</id>
+    <title>Extract Actor from Actor Page on imdb.com</title>
+    <updated>2009-02-15T22:44:40Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/imdbactorpage.mod</content>
+    <libx:module>
+      <libx:include>/imdb\.com\/name\/nm/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>/* Main Heading on Actor page in imdb */
+var mainHeading = $("div[id='tn15title'] h1")[0];
+
+var actorName = libx.utils.string.trim(mainHeading.firstChild.data);
+
+libx.space.write({
+    imdbactor: actorName,
+    position: mainHeading.firstChild
+});
+
+// vim: set syntax=javascript</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>24</id>
+    <title>Link to DVDs based on actor</title>
+    <updated>2009-02-15T22:44:40Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/linktoactor.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ imdbactor: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>// advanced search for 'field: other'
+var cue = new libx.cues.CatalogCue('X', 'N:(' + tuple.imdbactor + ')');
+// type=DVD
+cue.cue.href += '&amp;q=m';
+cue.cue.title += ' for DVDs with ' + tuple.imdbactor;
+
+cue.insertBefore(tuple.position);
+cue.animate();
+
+// vim: set syntax=javascript</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>25</id>
+    <title>Alert library resources available</title>
+    <updated>2009-02-18T21:59:48Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/alertimdbtolibrary.mod</content>
+    <libx:module>
+      <libx:include>/imdb\.com.*/</libx:include>
+      <libx:exclude>/imdb\.com\/images/</libx:exclude>
+      <libx:body>libx.space.write({
+notify:
+    "&lt;a href='" + libx.edition.links.primary.href + "'&gt;" + libx.edition.links.primary.label + "&lt;/a&gt;"
+    + " has many DVDs and other audio-visual material available.  Click where you see the "
+    + "&lt;img src='" + libx.edition.options.icon + "'/&gt; icon."
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>26</id>
+    <title>Point All About Explorers to NYT</title>
+    <updated>2009-02-16T23:07:06Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="27"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="28"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="7"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>27</id>
+    <title>Play NYT Video</title>
+    <updated>2009-02-16T23:07:06Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/allaboutexplorers.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/allaboutexplorers\.com\//</libx:include>
+      <libx:body><![CDATA[
+libx.space.write({
+    nyt_video_id: "1194837851726",
+    nyt_video_desc: "This web site was recently mentioned in a video on the New York Times website. <a target='_top' href='http://www.nytimes.com/2009/02/16/books/16libr.html?scp=2&sq=library&st=cse'>Click here to read more ...</a>"
+});
+
+
+// vim: set syntax=javascript
+
+]]></libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>28</id>
+    <title>Play A New York Times Video</title>
+    <updated>2009-02-20T01:20:00Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/nytimesvideo.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/.*/</libx:include>
+      <libx:guardedby>{ nyt_video_id: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body><![CDATA[
+/** Insert a NYT Video into the notification area */
+// videoId=1194837851726
+var htmlMsg = '<div>' + tuple.nyt_video_desc + '</div><iframe height="375" frameborder="0" width="318" scrolling="no" style="margin-left: -1px;" marginheight="0" marginwidth="0" id="nyt_video_player" name="nyt_video_player" title="New York Times Video - article player" src="http://graphics8.nytimes.com/bcvideo/1.0/iframe/bcArtIframe.html?z=0&amp;videoId=' + tuple.nyt_video_id + '" />';
+
+libx.space.write({ notify : htmlMsg, options : { width : 318 }});
+
+]]></libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>29</id>
+    <title>Alert users to ACM digital library subscription</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="30"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="31"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="32"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="7"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>30</id>
+    <title>Display a Help icon on the ACM page that plays a video when clicked.</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/acm.helpbutton.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/portal\.acm\.org.*/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>// Place the current edition's icon into the ACM portal page, next to the
+// current search button.
+libx.space.write ( {
+  needsuserbutton: $('input[src="http://portal.acm.org/images/search_small.jpg"]'),
+  image: libx.edition.options.icon,
+  text: "Click for a short tutorial",
+  action: function () {
+        // When user clicks, offer to show a YouTube clip
+    libx.space.write ( { youtube: "ehkfEcQ5YnQ"} );
+  }
+} );</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>31</id>
+    <title>Place a clickable image into a page</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/placeimage.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/.*/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:guardedby>{ needsuserbutton: libx.space.WILDCARD, action: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>// Create a link with an embedded image
+var a = $("&lt;a href='javascript:void(0);'/&gt;");
+a.append('&lt;img border="0" src="' + tuple.image + '"/&gt;');
+a.attr( 'title', tuple.text || "");
+
+// Insert link after element where a 'user button' is wanted
+$(tuple.needsuserbutton).after(a);
+
+// Associate onclick handler and animate
+$(a).click(tuple.action).fadeOut("slow").fadeIn("slow");</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>32</id>
+    <title>Create a notification to play a YouTube video, based on Video ID</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/youtube.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/.*/</libx:include>
+      <libx:guardedby>{ youtube: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body><![CDATA[
+// Create HTML based on tuple.youtube
+libx.space.write ( {
+	notify : '<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/'+tuple.youtube+'&hl=en&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'+tuple.youtube+'&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object>',
+	options: { width: '450px' }
+} );
+
+]]></libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>33</id>
+    <title>Process COinS</title>
+    <updated>2009-02-19T01:05:31Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="34"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="35"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>34</id>
+    <title>Find COinS</title>
+    <updated>2009-02-19T01:05:31Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/findcoins.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/.*/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>$(".Z3988").each(function () {
+    libx.space.write({
+        coins: this,
+        contextobj: this.getAttribute('title')
+    });
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>35</id>
+    <title>Link COinS</title>
+    <updated>2009-09-30T11:17:28Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/linkcoinstoopenurl.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/.*/</libx:include>
+      <libx:require>legacy-cues</libx:require>
+      <libx:guardedby>{ coins: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>var cue = new libx.cues.StandardCoins(tuple.contextobj);
+cue.insertBefore(tuple.coins);
+
+var link360 = libx.services.link360.getLink360(libx.edition);
+if (link360)
+  link360.getMetadata({
+    query: tuple.contextobj,
+    type: 'article',
+    hasFullText: function (xmlDoc, url, databaseName) {
+      cue.setAttribute('href', url);
+      cue.setAttribute('title', "Users of " + libx.edition.links.primary.label
+            + " click here for full text via " + databaseName);
+      cue.setImageAttribute('src', 'http://www.lib.vt.edu/images/L_getvtext.gif');
+      cue.animate();
+    },
+  });
+
+// coexist
+libx.space.write(tuple);</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>36</id>
+    <title>Engineering Village Author Tool</title>
+    <updated>2009-09-30T12:55:42Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:libapp>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="37"/>
+      <libx:entry xmlns:libx="http://libx.org/xml/libx2" src="38"/>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>37</id>
+    <title>Detect Linked Authors Names</title>
+    <updated>2009-10-05T04:48:44Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/evfindauthor.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/engineeringvillage\.com/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:body>var htmlcontent = "\
+    &lt;p style='font-family: Verdana;'&gt;\
+    LibX Note: Clicking on hyperlinked author names shows only \
+    results for this spelling of the author's name.\
+    Show a &lt;a href='http://libx.org/images/engineeringvillageauthorsearch.swf'&gt;\
+    1:50m tutorial&lt;/a&gt; to learn how to find all variations.\
+    &lt;/p&gt;\
+    ";
+
+// since the tooltip with have the same html content for each node, we only
+// build it once, and reposition on-demand.
+libx.space.write({
+    fancytooltip:   true,
+    build:          true,
+    display:        false,
+    content:        htmlcontent,
+    width:          450,
+    height:         200
+});
+
+// for each author link, attach an event that shows the tooltip on hover, i.e.,
+// writes a tuple to activate the tooltip display() function. Do this only once
+// the tooltip has been built
+libx.space.take({
+    template: { container: libx.space.WILDCARD },
+    ontake: function (tuple) {
+        var delaytimer;
+        $(".SpLink").hover(
+            function () {
+                var node = this;
+                delaytimer = setTimeout (function () {
+                    libx.space.write({
+                        fancytooltip:   true,
+                        build:          false,
+                        display:        true,
+                        anchor:         node,
+                        container:      tuple.container
+                    });
+                }, 600);
+            },
+            function () {
+                delaytimer = clearTimeout(delaytimer);
+            }
+        );
+    }
+});</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>38</id>
+    <title>Add a Styled Tooltip Popup</title>
+    <updated>2009-10-05T04:47:50Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/addfancytooltip.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/engineeringvillage\.com/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:guardedby>{ fancytooltip: true, build: libx.space.WILDCARD, display: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>/**
+ * build a graphical, resizable tooltip near a DOM node. This module consumes
+ * two tuples. First, it will construct a tooltip and write the node to the
+ * tuple space. If desired, another module may either display it, or send
+ * a tuple containing the display flag set for this module to display it near
+ * a particular node.
+ */
+
+if      (tuple.build)   build();
+else if (tuple.display) display();
+
+function build () {
+    var img_base = "http://libx.org/images/fancytooltip/";
+    var container = document.createElement('div');
+    container.style.position = "absolute";
+    // set dimensions
+    container.style.width  = tuple.width;
+    container.style.height = tuple.height;
+
+    var container_jq = $(container);
+    // initial state of the element must be visible, but faded out, in order
+    // for fading to work correctly
+    container_jq.css("visibility", "visible");
+    container_jq.fadeOut(1);
+container.innerHTML = "\
+    &lt;table border='0' cellspacing='0' cellpadding='0'&gt;\
+      &lt;tr&gt;\
+        &lt;td&gt;&lt;table width='100%' border='0' cellspacing='0' cellpadding='0'&gt;\
+          &lt;tr&gt;\
+            &lt;td width='31' height='24' background='" + img_base +"topleft_fixed.png'&gt;&lt;/td&gt;\
+            &lt;td bgcolor='#FFFFFF' valign='top'&gt;&lt;table width='100%' border='0' cellpadding='0' cellspacing='0' background='" + img_base +"top_exp_horiz.png'&gt;\
+              &lt;tr&gt;\
+                &lt;td height='3'&gt;&lt;/td&gt;\
+              &lt;/tr&gt;\
+            &lt;/table&gt;&lt;/td&gt;\
+            &lt;td width='52' valign='bottom' background='" + img_base +"topright_fixed.png'&gt;\
+            &lt;img class='libx_fancytooltip_close_btn' src='"+ img_base +"x.png' style='border-style: none;' width='18' height='18'&gt;&lt;/img&gt;&lt;/td&gt;\
+          &lt;/tr&gt;\
+        &lt;/table&gt;&lt;/td&gt;\
+      &lt;/tr&gt;\
+      &lt;tr&gt;\
+        &lt;td&gt;&lt;table width='100%' border='0' cellspacing='0' cellpadding='0'&gt;\
+          &lt;tr&gt;\
+            &lt;td rowspan='2' width='4' background='" + img_base +"left_exp_vert.png'&gt;&lt;/td&gt;\
+            &lt;td rowspan='2' bgcolor='#FFFFFF'&gt;\
+            &lt;table cellpadding='9' cellspacing='0'&gt;&lt;tr&gt;&lt;td&gt;\
+                "+ tuple.content +"\
+            &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\
+               &lt;td width='22' height='16' background='" + img_base +"topright_fixed2.png'&gt;&lt;/td&gt;\
+          &lt;/tr&gt;\
+          &lt;tr&gt;\
+               &lt;td width='22' background='" + img_base +"right_exp_vert.png'&gt;&amp;nbsp;&lt;/td&gt;\
+          &lt;/tr&gt;\
+        &lt;/table&gt;&lt;/td&gt;\
+      &lt;/tr&gt;\
+      &lt;tr&gt;\
+        &lt;td&gt;&lt;table width='100%' border='0' cellspacing='0' cellpadding='0'&gt;\
+          &lt;tr&gt;\
+            &lt;td width='127' height='89' background='" + img_base +"botleft_tail_fixed.png'&gt;&lt;/td&gt;\
+            &lt;td valign='top'&gt;&lt;table width='100%' border='0' cellspacing='0' cellpadding='0'&gt;\
+              &lt;tr&gt;\
+                &lt;td width='100%' height='40' background='" + img_base +"bot_exp_horiz.png'&gt;&lt;/td&gt;\
+              &lt;/tr&gt;\
+            &lt;/table&gt;&lt;/td&gt;\
+            &lt;td width='54' align='right' valign='top'&gt;&lt;table width='54' border='0' cellspacing='0' cellpadding='0'&gt;\
+              &lt;tr&gt;\
+                &lt;td width='54' height='65' background='" + img_base +"botright_fixed.png'&gt;&lt;/td&gt;\
+              &lt;/tr&gt;\
+            &lt;/table&gt;&lt;/td&gt;\
+          &lt;/tr&gt;\
+        &lt;/table&gt;&lt;/td&gt;\
+      &lt;/tr&gt;\
+    &lt;/table&gt;\
+    ";
+    // notify that the tooltip has been built
+    libx.space.write({ container: container });
+}
+function display () {
+    var container = tuple.container;
+    var container_jq = $(container);
+
+    if (document.body.lastChild != container) {
+        document.body.appendChild(container);
+        var close_btn;
+        // find the img inside the container
+        var imgs = container.getElementsByTagName("img");
+        for (var i = 0; i &lt; imgs.length; i++) {
+            if (imgs[i].className == "libx_fancytooltip_close_btn") {
+                close_btn = $(imgs[i]);
+            }
+        }
+        close_btn.hover(
+            function () { $(this).css("background-color", "#ABCFF3"); },
+            function () { $(this).css("background-color", "#FFFFFF"); }
+        );
+        close_btn.click(function () {
+            container_jq.fadeOut(300);
+        });
+        positionAndShow();
+    }
+    else {
+        // this is probably the case where the tooltip is re-displayed
+        // at a new location. fadeout the current one, and fadein the new one
+        setTimeout(function () { positionAndShow(); }, 250);
+        container_jq.fadeOut(300);
+    }
+    function positionAndShow() {
+        var offset = $(tuple.anchor).offset();
+        // subtract an extra 4 pixels to keep part of the tooltip image from
+        // covering the dom element
+        container.style.top  = offset.top - container_jq.height() - 4;
+        container.style.left = offset.left;
+        container_jq.fadeIn(750);
+    }
+}</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>40</id>
+    <title>Test parameter passing</title>
+    <updated>2010-01-14T16:39:22Z</updated>
+    <author>
+      <name>Travis Webb</name>
+      <uri>http://libx.org</uri>
+      <email>tjwebb@cs.vt.edu</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/paramtestmodule.mod</content>
+    <libx:module xmlns:libx="http://libx.org/xml/libx2">
+      <libx:include>/paramtest/</libx:include>
+      <libx:params>
+        <libx:param name="x" type="string">
+          <libx:description>
+            some variable named x
+          </libx:description>
+        </libx:param>
+        <libx:param name="y" type="number">
+          <libx:description>
+            an important number
+          </libx:description>
+        </libx:param>
+        <libx:param name="a" type="boolean">
+          <libx:description>
+             an important boolean flag 
+          </libx:description>
+        </libx:param>
+        <libx:param name="c" type="enum">
+          <libx:description>
+            a color
+          </libx:description>
+          <libx:option value="red"/>
+          <libx:option value="green"/>
+          <libx:option value="blue"/>
+        </libx:param>
+      </libx:params>
+      <libx:body>libx.log.write("paramtest module");
+libx.log.write(params.toSource());</libx:body>
+    </libx:module>
+  </entry>
+  <entry>
+    <id>39</id>
+    <title>Libx2 param passing test app</title>
+    <updated>2010-01-14T16:39:09Z</updated>
+    <author>
+      <name>Travis Webb</name>
+      <uri>http://libx.org</uri>
+      <email>tjwebb@cs.vt.edu</email>
+    </author>
+    <content type="html">LibApp generated from /home/tjwebb/public_html/dev/libx2/libapps/root/paramtest.app</content>
+    <libx:libapp>
+      <libx:include>/paramtest/</libx:include>
+      <libx:exclude>/imdb\.com\/images/</libx:exclude>
+      <libx:require>jquery</libx:require>
+      <libx:params>
+        <libx:param name="x" type="string">
+          <libx:description>
+            some variable named x
+          </libx:description>
+        </libx:param>
+        <libx:param name="y" type="number">
+          <libx:description>
+            an important number
+          </libx:description>
+        </libx:param>  
+        <libx:param name="z" type="enum">
+          <libx:description>
+            a color
+          </libx:description>
+          <libx:option value="red"/>
+          <libx:option value="green"/>
+          <libx:option value="blue"/>
+        </libx:param>
+      </libx:params>
+      <libx:entry src="40">
+        <libx:args>
+          <libx:arg name="y" type="string" value="{x}"/>
+          <libx:arg name="x" type="number" value="{y}"/>
+          <libx:arg name="a" type="boolean" value="true"/>
+          <libx:arg name="c" type="enum" value="red" />
+        </libx:args>
+      </libx:entry>
+    </libx:libapp>
+  </entry>
+  <entry>
+    <id>1</id>
+    <title>LibX Core Package</title>
+    <updated>2010-01-13T19:44:26Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Content created by LibX Libapp Builder</content>
+    <libx:package>
+      <libx:entry src="2"/>
+      <libx:entry src="5"/>
+      <libx:entry src="8"/>
+      <libx:entry src="12"/>
+      <libx:entry src="22"/>
+      <libx:entry src="26"/>
+      <libx:entry src="29"/>
+      <libx:entry src="33"/>
+      <libx:entry src="36"/>
+    </libx:package>
+  </entry>
+  <entry>
+    <id>7</id>
+    <title>(edited) Display HTML notifications via an embedded panel using jGrowl</title>
+    <updated>2009-02-20T14:55:20Z</updated>
+    <author>
+      <name>LibX Team</name>
+      <uri>http://libx.org</uri>
+      <email>libx.org@gmail.com</email>
+    </author>
+    <content type="html">Module generated from /home/tjwebb/public_html/dev/libx2/libapps/root/jgrowl.mod</content>
+    <libx:module>
+      <libx:include>/.*/</libx:include>
+      <libx:require>jquery</libx:require>
+      <libx:require>jgrowl</libx:require>
+      <libx:require>jgrowl.css</libx:require>
+      <libx:guardedby>{ notify: libx.space.WILDCARD }</libx:guardedby>
+      <libx:body>// Set sticky:true unless provided in tuple.options
+varjGrowlOptions= $.extend({}, {sticky:true}, tuple.options);
+
+//Displaynotification
+$.jGrowl(tuple.notify,jGrowlOptions );</libx:body>
+    </libx:module>
+  </entry>
+</feed>

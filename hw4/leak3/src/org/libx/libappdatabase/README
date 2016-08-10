@@ -1,0 +1,55 @@
+Libapp Database, Feed Publisher, and Libapp Builder Interface
+
+How to deploy:
+
+    1.  cd into editionbuilder/src/org/libx/libappdatabase and run `make`.
+        This will compile the java classes and move the class files into 
+        WEB-INF/classes/org/libx/libappdatabase/.
+
+    2.  Run 
+            make emptyfeeds install
+        to create a blank and empty database
+
+        Run
+            make allfeeds install
+        to restore all feeds into a blank database
+
+    3.  Create a symlink in your tomcat webapps/ directory to your working
+		editionbuilder/ directory.
+
+        
+    Libapp Builder Interface:
+        http://yourserver:8080/editionbuilder/src/zul/libappbuilder.zul
+
+
+//----
+Troubleshooting:
+
+	If you get a security exception, the permissions on either ~/.basex or 
+	your DBPATH probably restrict tomcat from reading/writing those files
+
+	If you get an error about not being able to access org.basex.Prop, you
+	need to do the following:
+
+		1.	edit /etc/tomcat6/policy.d/50local.policy
+		2. 	add the following to the bottom of the file:
+
+		grant codeBase "file:${catalina.base}/webapps/editionbuilder/-" {
+			permission java.security.AllPermission;
+		};
+
+		3. restart tomcat
+
+
+//----
+Configuration:
+    
+    Database Location:
+        The database location is read from a file .basex usually located in the 
+        home directory.  The actual location of the home directory is set in 
+        org.basex.core.Prop.HOME, which is initialized from the user.home property.
+        We adjust user.home when running the tools from the command line to
+        force BaseX to use the database files in WEB-INF/
+
+        In the servlet, we set org.basex.core.Prop.HOME before BaseX starts up.
+

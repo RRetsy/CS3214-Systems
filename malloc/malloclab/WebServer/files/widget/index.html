@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+
+  <title>Sysstat Widgets Demo</title>
+
+  <!-- 
+       The widgets are <div> and <span> elements with classes memstat
+       and loadavg, respectively.  
+       Change the 'url' attribute to point to your web service.
+    -->
+<script language="javascript" type="text/javascript" src="sysstatwidgets.js">
+</script>
+<script type="text/javascript">
+function send(url, rselector) {
+    var $ = jQuerySysStatWidget;
+    $.get(url, function (response) {
+        $(rselector).html(response);
+    });
+}
+</script>
+</head>
+
+<body>
+  <p>This page display two widgets that display the physical memory
+  usage and the overall CPU load average of the machine that runs your 
+  web service.  Examine the HTML to see how these 'widgets' are embedded
+  into the page. </p>
+    
+  <p>
+  <script>var count = 0;</script>
+  <a href="#" onclick="javascript:send('/runloop', '#responsemsg');">Click here</a> to run a 15 second loop on this machine (which will result in an increase in the load average).
+      <span id="responsemsg"></span>
+  </p>
+
+  <p>
+  <a href="#" onclick="javascript:send('/allocanon', '#responsemsg2');">Click here</a> to force allocation of 64MB of physical
+        memory used as application (anonymous) memory.
+      <span id="responsemsg2"></span>
+  </p>
+
+  <p>
+  <a href="#" onclick="javascript:send('/freeanon', '#responsemsg3');">Click here</a> to force deallocation of last
+        chunk of allocated physical memory.
+      <span id="responsemsg3"></span>
+  </p>
+
+  <table>
+    <tr>
+      <th>Memory</th>
+
+      <th>CPU Load Average</th>
+    </tr>
+
+    <tr>
+      <td>
+        <div id="meminfo" url="http://localhost:13865/" update="5000" 
+          style="margin-top:20px; margin-left:20px; width:180px; height:400px;">
+        </div>
+      </td>
+
+      <td>
+        <div id="loadavg" url="http://localhost:13865/" update="2500" 
+          style="margin-top:20px; margin-left:20px; width:600px; height:400px;">
+            Loading, please wait...
+        </div>
+      </td>
+    </tr>
+  </table>
+
+<p>A text-only version of the load average widget: 
+  <span class="loadavg-text" url="http://localhost:13865/" update="4000"
+        style="font-weight: bold">
+  </span>
+</p>
+</body>
+</html>

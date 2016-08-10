@@ -1,0 +1,5 @@
+
+This directory contains two skeleton examples of plug-ins.
+
+The Makefile in ../Makefile builds the corresponding .so files.
+ 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Search Options.
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <hbox hflex="1" sclass="level1box">
+        <html:b>Search Options:</html:b>
+        <html:p>
+            Search options such as "Keyword", "Title", etc. appear in a drop-down
+            list in the toolbar.  Each option has a "code" associated with it.
+            A number of options with their associated labels and codes are built-in.
+            Except for bookmarklets, the set of options
+            that is displayed depends on a particular catalog's implementation and
+            cannot be changed here---contact libx.org@gmail.com if you would like
+            to see LibX support more options for a particular catalog.
+            Instead, you would use this dialog in two cases:
+        </html:p>
+        <html:p>
+            1. To change what is displayed for a particular option you can override
+            the label associated with a built-in search code.
+            For instance, to display "Classmark" instead of "Call Number," you would
+            override code 'c'.  To display "Periodical Titles" instead of "Journal
+            Titles", you would override code 'jt'.
+        </html:p>
+        <html:p>
+            2. To define new search codes that are used in bookmarklets.
+            You must specify both the code and the label.
+            Note that bookmarklets can use both codes you define and built-in codes.
+            For instance, if your bookmarklet searches a search engine, you could use %Y in
+            the bookmarklet, in which case a "Keyword" label would displayed, without
+            requiring you to define the label here.
+        </html:p>
+
+        <html:table border="0">
+            <html:tr>
+                <html:th colspan="6">
+                    Built-in Codes
+                </html:th>
+            </html:tr>
+            <html:tr>
+                <html:td width="5%" >Y          </html:td> <html:td width="20%" >Keyword    </html:td>
+                <html:td width="5%" >t          </html:td> <html:td width="20%" >Title    </html:td>
+                <html:td width="5%" >a          </html:td> <html:td width="20%" >Author    </html:td>
+            </html:tr>
+            <html:tr>
+                <html:td width="5%" >d          </html:td> <html:td width="20%" >Subject    </html:td>
+                <html:td width="5%" >i          </html:td> <html:td width="20%" >ISBN/ISSN    </html:td>
+                <html:td width="5%" >c          </html:td> <html:td width="20%" >Call Number    </html:td>
+            </html:tr>
+            <html:tr>
+                <html:td width="5%" >at          </html:td> <html:td width="20%" >Article Title    </html:td>
+                <html:td width="5%" >jt          </html:td> <html:td width="20%" >Journal Title    </html:td>
+            </html:tr>
+        </html:table>
+
+        <vbox hflex="1" visible="false" id="searchOptionsVbox">
+            <grid>
+                <columns>
+                    <column align="left" label="Search Label" />
+                    <column align="left" label="Code" />
+                    <column align="left" label="" />
+                </columns>
+                <rows id="searchoptionsController" 
+                	use="org.libx.editionbuilder.OptionsTabController$SearchOptionsTabController" />
+            </grid>
+        </vbox>
+        <zscript>
+            searchoptionsController.initialize(searchOptionsVbox);
+        </zscript>
+        <button label="Add New Search Option Code" 
+        	onClick="searchoptionsController.addNewSearchOption();" />
+    </hbox>
+</zk>

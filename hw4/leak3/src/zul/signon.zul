@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  A macro component to manage sign-on/off functionality.
+  This component handles email/password input, logged-on/off state,
+  password reminder functionality and new user addition.
+
+  It is backed by the org.libx.editionbuilder.UserInfo class
+
+  Other components interact with this component through
+  sign-on/sign-off listeners.
+
+  $Id: signon.zul,v 1.19 2010/07/12 23:37:41 vsony7 Exp $
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml" xmlns:js="http://www.zkoss.org/2005/zk/client">
+    <vbox hflex="1" id="userinfo" use="org.libx.editionbuilder.UserInfo" sclass="level1box">
+	    <grid width="400px">
+    	    <columns>
+        	    <column hflex="1" />
+            	<column hflex="2" />
+            </columns>
+	        <rows>
+    	        <row>Username:<textbox hflex="1" id="email" /></row>
+	            <row>Password:<textbox hflex="1" 
+	                js:onKeyDown="fireSubmitOnEnter(event,this.$f('password'),this.$f('authenticate'));" 
+                    id="password" type="password" />
+            	</row>
+            </rows>
+	    </grid>
+    	<hbox>
+        	<hbox tooltip="authenticationHelpPopup">
+            	<image id="help" />
+            	Why should I register?
+            </hbox>
+	        <button id="authenticate" label="Log On" 
+    	    	onClick="userinfo.logonButtonPressed(email.value, password.value);" />
+        </hbox>
+	    <popup id="authenticationHelpPopup" width="500px" class="helptextbox">
+    		<html:p>
+	        	Registering allows you to return to the edition builder site
+	    	    to make changes to LibX editions you have built.
+		    	To register, simply provide an email address and choose
+        		a password, then click the "Log On" button.
+            </html:p>
+	    	<html:p>
+    			We will use the email address you provide to send you password
+        	    reminders, requests for ownership changes, and we may send you
+    	    	announcements about LibX.  We will not share your email address
+    	    	with anyone.  We do not verify that you own the email address
+        	    you provide.
+            </html:p>
+	        <html:p>
+    		    You also need to register to request ownership of editions
+	    		you have adapted in the past.  Those imported editions are temporarily
+    	    	owned by libx.editions@gmail.com.
+	        </html:p>
+            <html:p>
+	    	    Each edition can have multiple owners that can make changes to its
+		    	configuration.  You can share or transfer ownership of editions you
+        	    own to other registered users.
+    	    </html:p>
+        	<html:p>
+	            You can build a test edition and install (and bookmark) it without
+    		    registering - but you will not be able to make any changes to it
+	            later on.  Such orphaned editions are removed from our site from
+			    time to time for housekeeping purposes.
+        	</html:p>
+    	</popup>
+    	<vbox id="authenticationBox" />
+    	<zscript>
+        	help.src=System.getProperty("eb.helpimage");
+        	userinfo.registerAuthenticationFields(authenticationBox, email, password, authenticate);
+            Utils.HelpPopup.logOpenEvents(authenticationHelpPopup, "/src/zul/signon.zul");
+    	</zscript>
+    </vbox>
+</zk>

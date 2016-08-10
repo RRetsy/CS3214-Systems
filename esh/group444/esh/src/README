@@ -1,0 +1,105 @@
+Student Information
+-------------------
+Evan Lobeto, elobeto
+Kevin Ellis, kevellis
+
+How to execute the shell
+------------------------
+1. From the src folder, type make to compile and build the executable
+2. Type ./esh to run the shell without any plugins
+3. For plugins, type ./esh -p <directory of plugins>
+
+Important Notes
+---------------
+
+Description of Base Functionality
+----------------------------------
+Jobs:
+This command will iterate through the list of jobs and print out each
+job in the following form:
+[Job ID]  Status of Job                 (Name of job)
+
+Fg:
+This command will bring a stopped or background job to the foreground of 
+the shell. It accomplishes this by retrieving the desired job from the
+list of jobs and setting its status to Foreground. It then gives terminal
+control to that job and sends it a SIGCONT command if its status was stopped.
+Following that it will begin waiting for the job to complete. 
+If no job is specified, it will send the last added job (the back of the job list)
+to the foreground.
+
+Bg:
+This command will send a stopped command to the background and start it running
+again. It retrieves the desired job and sets its status to Running and sends it 
+a SIGCONT signal. It also saves the state of the terminal to the specific job.
+If no job is specified, it will send the last added job (the back of the job list)
+to the background.
+
+Kill:
+This command kills a specific job by retrieving the desired job and sending it
+a SIGKILL via the C kill() method. If no job is specified it will kill the last
+started job.
+
+Stop:
+This command stops a specific job by retrieving the desired job and sending it
+a SIGSTOP via the C kill() method. If no job is specified it will stop the last
+started job.
+
+Ctrl-C:
+If the shell receives Ctrl-C while a foreground process is running, it will kill it.
+However, if it receives Ctrl-C while waiting at the prompt, it will kill the entire
+shell. This is accomplished in the job_status method that the SIGCHLD handler calls.
+The job_status method will check the status that is passed in from the handler and act
+accordingly.
+
+Ctrl-Z:
+If the shell receives Ctrl-Z while a foreground process is running, it will stop it.
+However, if it receives Ctrl-Z while waiting at the prompt, it will stop the entire
+shell. This is accomplished in the same way as Ctrl-Z.
+
+Description of Extended Functionality
+-------------------------------------
+Exclusive Access:
+The shell is able to grant exclusive access to applications and processes such as VIM and Nano.
+This is acheived by correctly setting the job's prgp and the child process' pgid as well as
+saving the terminal state upon stopping and resuming so that the shell is able to pass control over
+to specific process groups. This implementation followed directly from finishing the base 
+functionality.
+
+IO Redirection:
+The shell is able to append (>>) output to files, send and overwrite (>) output to files and 
+send input (<) to commands from files. This was accomplished by checking the iored_input and 
+iored_output flags in the pipeline in order to determine whether IO needed to be altered. If the 
+input flag was set then it will open the specified file and set the command's STDIN to be from the file
+via dup2. If the output flag is set and the append_to_output then it will open the file and appened the
+command's output to it since the O_APPEND flag is set when the file is opened. Otherwise, it will simply
+overwrite whatever was previously in the file.
+
+Piping: 
+The shell has the ability to perform single pipes. It creates two pipes and the appropriate file descriptors for them. It then closes off unnecessary ends to the pipes and connects two commands via these pipes. It allows for the appearence of seamless connection between two commands. Currently we do not have multiple pipes working.
+
+
+
+Implemented Plug-Ins
+--------------------
+We did not write any of our own plug-ins, however we can run the following:
+1. Group 422 converter
+2. Group 422 binHex
+3. Group 451 piglatin
+4. Group 422 reverseString
+5. Group 451 yolo
+6. Group 422 sumation
+7. Group 401 pkdx
+8. Group 422 chdir
+9. Group 436 oddeven
+10. Group 461 binary
+11. Group 461 hex
+12. Group 461 envcontrol
+13. Group 416 imThirsty
+14. Group 461 workdir
+15. Group 416 iHeartSystem
+16. Group 416 intToBinary
+17. Group 416 ohHello
+18. Group 416 started
+19. Group 416 stringToBinary
+20. Group 416 startTimer

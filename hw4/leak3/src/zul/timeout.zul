@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Timeout"?>
+
+<window xmlns:html="http://www.w3.org/1999/xhtml">
+    <style src="../styles/editionbuilder.css" />
+	<html:h2>
+		LibX Edition Builder
+	</html:h2>
+
+	<html:h4>
+        Your session timed out because it has been inactive for some time,
+		or because we had to restart the server for maintenance reasons.
+	</html:h4>
+	<label id="restartwhen" />
+	<zscript>
+		monitor = desktop.webApp.configuration.monitor;
+		Date startTime = new Date(monitor.startTime);
+		int uptime = (System.currentTimeMillis() - monitor.startTime) / 60000;
+		int updays = uptime / 24 / 60;
+		uptime -= updays * (24 * 60);
+		String ago = "" + updays + " days, " + (uptime / 60) + " hours and " + (uptime % 60) + " mins";
+		restartwhen.value = "(The last maintenance-related restart occurred " 
+		    + startTime + ", which was " + ago + " ago.) ";
+	</zscript>
+
+	<html:p>
+		If you did not register for an account, your work is lost now.
+		Register for an account the next time you use the edition builder interface.
+	</html:p>
+
+	<html:p>
+		If you were signed into your account, your work should have been saved.
+	</html:p>
+	<html:a href="index.zul">Take me back to the edition builder</html:a>
+</window>

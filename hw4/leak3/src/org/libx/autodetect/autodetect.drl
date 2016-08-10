@@ -1,0 +1,98 @@
+package org.libx.autodetect;
+
+import org.libx.autodetect.Detector.Page;
+import org.libx.autodetect.Detector.Element;
+import org.libx.autodetect.Detector.Meta;
+import org.libx.autodetect.Utils;
+import org.libx.autodetect.Facts.OpenSearchDescription;
+import org.libx.autodetect.Facts.Millenium;
+import org.libx.autodetect.Facts.Sirsi;
+import org.libx.autodetect.Facts.Aleph;
+import org.libx.autodetect.Facts.Horizon;
+import org.libx.autodetect.Facts.Web2;
+import nu.xom.Node;
+import nu.xom.Nodes;
+import nu.xom.Attribute;
+import nu.xom.XPathContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+dialect "mvel"
+
+rule "Meta Refresh"
+when
+    p : Page ();
+    redirect : Element (this["http-equiv"] == "refresh"
+                     && this["content"] matches "0;URL=.*")
+               from p.elements["meta"];
+then
+    String redirectUrl = Utils.getMatchGroup(Meta.REFRESH_AFTER_0, redirect["content"]);
+    System.out.println("following META-refresh to: " + redirectUrl);
+    insert (new Page(redirectUrl));
+end
+
+rule "III Millennium"
+when
+    p : Page (headers.Server contains "III 100");
+then
+    Millenium m = new Millenium();
+    m.url = Utils.getMatchGroup(Url.HOSTPATTERN, p.url);
+    insertLogical(m);
+    // System.out.println("found a III system at " + p.url);
+end
+
+rule "Aleph"
+when
+    p : Page (headers.Server[0] matches "ALEPH.*");
+then
+    List t = p.elements["title"];
+    String ttl = ((Element)t[0]).value;
+    // System.out.print("found an Aleph system at " + p.url + " " + ttl);
+    Aleph a = new Aleph();
+    a.url = p.url;
+    insertLogical(a);
+end
+
+
+rule "Sirsi"
+when
+    p : Page (url matches ".*/uhtbin/cgisirsi.*");
+then
+    System.out.println("found a Sirsi system at " + p.url);
+    Sirsi s = new Sirsi();
+    s.url = p.url;
+    insertLogical(s);
+end
+
+rule "OpenSearchDescription Link"
+when
+    p: Page ();
+    opensearchdescription : Element (
+                        this.rel == "search"
+                     && this.type == "application/opensearchdescription+xml")
+               from p.elements["link"];
+then
+    /*
+    System.out.println("following OpenSearchDescription link at "
+        + " " + (opensearchdescription["href"])
+        + " " + (opensearchdescription["title"])
+    );
+    */
+    insert (new Page(opensearchdescription["href"]));
+end
+
+rule "OpenSearchDescription"
+when
+    p: Page ();
+    opensearchdescription : Node () from p.query("//a9:OpenSearchDescription", "a9", "http://a9.com/-/spec/opensearch/1.1/");
+    url : nu.xom.Element () from p.query("//a9:Url", "a9", "http://a9.com/-/spec/opensearch/1.1/");
+then
+    OpenSearchDescription osd = new OpenSearchDescription();
+    osd.url =  url.getAttribute("template").value;
+    insertLogical(osd);
+    //System.out.println("found OpenSearchDescription template at " + osd);
+end
+
+# vim: syntax=java

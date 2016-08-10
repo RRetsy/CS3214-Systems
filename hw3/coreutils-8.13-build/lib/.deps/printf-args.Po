@@ -1,0 +1,39 @@
+printf-args.o printf-args.o: ../../coreutils-8.13/lib/printf-args.c \
+  config.h ../../coreutils-8.13/lib/printf-args.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h wchar.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-64.h /usr/include/wchar.h stdio.h \
+  /usr/include/stdio.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/include/bits/wchar.h /usr/include/xlocale.h
+
+config.h:
+
+../../coreutils-8.13/lib/printf-args.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:
+
+wchar.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/include/wchar.h:
+
+stdio.h:
+
+/usr/include/stdio.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/xlocale.h:

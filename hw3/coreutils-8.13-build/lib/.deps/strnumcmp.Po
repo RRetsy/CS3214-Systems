@@ -1,0 +1,12 @@
+strnumcmp.o strnumcmp.o: ../../coreutils-8.13/lib/strnumcmp.c config.h \
+  ../../coreutils-8.13/lib/strnumcmp-in.h \
+  ../../coreutils-8.13/lib/strnumcmp.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h
+
+config.h:
+
+../../coreutils-8.13/lib/strnumcmp-in.h:
+
+../../coreutils-8.13/lib/strnumcmp.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:

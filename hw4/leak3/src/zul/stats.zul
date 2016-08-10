@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="ZK Statistics"?>
+<!--
+stats.zul
+-->
+<zk xmlns:h="http://www.w3.org/1999/xhtml">
+	<zscript>
+		monitor = desktop.webApp.configuration.monitor;
+	</zscript>
+
+	<h:h1>Edition Builder Server Statistics</h:h1>
+
+	<label style="font-weight:bold;color:#404010" value="No monitor installed."
+		if="${empty monitor}" />
+
+	<vbox unless="${empty monitor}">
+		<grid width="500px">
+			<columns>
+				<column width="180px" label="What" />
+				<column width="100px" align="right" label="Total" />
+				<column width="120px" align="right" label="Hourly Average" />
+				<column width="100px" align="right" label="Active" />
+			</columns>
+			<rows>
+				<row>
+					Number of Sessions
+					<label id="totalSession" />
+					<label id="averageSession" />
+					<label id="activeSession" />
+				</row>
+				<row>
+					Number of Desktops
+					<label id="totalDesktop" />
+					<label id="averageDesktop" />
+					<label id="activeDesktop" />
+				</row>
+				<row>
+					Number of Updates
+					<label id="totalUpdate" />
+					<label id="averageUpdate" />
+					<label id="activeUpdate" />
+				</row>
+			</rows>
+		</grid>
+		<hbox>Serving since <label id="startTime"/></hbox>
+		<hbox>Now is <label id="now"/></hbox>
+		<hbox>Time escaped <label id="totalTime"/></hbox>
+		<button label="Reload statistics" onClick="monitor()" />
+	    <vbox><h:b>Database statistics </h:b>
+	        <hbox><label id="numUsers" /> Registered Users
+	        </hbox>
+	        <hbox><label id="numUsersInStudy" /> Users who have not opted out of study
+	        </hbox>
+	        <hbox><label id="numEditions" /> Total Editions
+	        </hbox>
+	        <hbox><label id="numPublicEditions" /> Public Editions
+	        </hbox>
+	        <hbox><label id="numBlessedEditions" /> Blessed Editions
+	        </hbox>
+	        <hbox><label id="numSharedCatalogs" /> Shared Catalogs
+	        </hbox>
+	        <zscript>
+	            import org.libx.editionbuilder.DbUtils;
+	            numPublicEditions.setValue(Integer.toString(DbUtils.getTableCount("editionInfo", "isPublic = 1", new String [] { })));
+	            numBlessedEditions.setValue(Integer.toString(DbUtils.getTableCount("editionInfo", "isBlessed = 1", new String [] { })));
+	            numSharedCatalogs.setValue(Integer.toString(DbUtils.getTableCount("catalogInfo")));
+	            numEditions.setValue(Integer.toString(DbUtils.getTableCount("editionInfo")));
+	            numUsers.setValue(Integer.toString(DbUtils.getTableCount("userInfo")));
+	            numUsersInStudy.setValue(Integer.toString(DbUtils.getTableCount("userInfo", "isSignedUpForStudy = 1", new String [] {})));
+	        </zscript>
+	    </vbox>
+
+	    <h:hr />
+	    Current values of Config.liveOptions fields.
+	    <h:b>
+	        Note: these values are live.  Please don't change them unless you know how they are used.
+	    </h:b>
+	    <vbox id="liveOptions" />
+	    <h:hr />
+		<zscript>
+		    import org.libx.editionbuilder.Config;
+		    import org.libx.editionbuilder.MailSystem;
+		    import java.lang.reflect.Field;
+		
+		    /*
+		     * Create control elements for all live options in Config.liveOptions.
+		     * Use Checkbox for boolean and Textbox for strings.
+		     */
+		    for (Config.FieldOption fo : Config.liveOptions) {
+		        Field f = fo.clazz.getField(fo.name);
+		        String display = fo.label + " (" + fo.clazz.name + "." + fo.name + ")";
+		        if (f.getType() == boolean.class) {
+		            Checkbox cbox = new Checkbox(display);
+		            cbox.setChecked(f.get(null));
+		            cbox.addEventListener("onCheck", new org.zkoss.zk.ui.event.EventListener() {
+		                public void onEvent(Event e) {
+		                    f.set(null, e.getTarget().isChecked());
+		                }
+		            });
+		            liveOptions.appendChild(cbox);
+		        } else if (f.getType() == String.class || f.getType() == int.class) {
+		            Textbox tbox;
+		            liveOptions.appendChild(new Hbox(new Component[] {
+		                new Label(display),
+		                tbox = new Textbox(f.get(null).toString())
+		            }));
+		            tbox.cols = 50;
+		            tbox.addEventListener("onChange", new org.zkoss.zk.ui.event.EventListener() {
+		                public void onEvent(Event e) {
+		                    String newvalue = e.getTarget().getValue();
+		                    if (f.getType() == String.class) {
+		                        f.set(null, newvalue);
+		                    } else if (f.getType() == int.class) {
+		                        f.set(null, Integer.parseInt(newvalue));
+		                    }
+		                }
+		            });
+		        } else {
+		            liveOptions.appendChild(new Label("Unsupported field type: " 
+		                + f.getType().toString() + " " + display));
+		        }
+		    }
+		
+			ifmt = new java.text.DecimalFormat("#,##0");
+			dfmt = new java.text.DecimalFormat("#,##0.00");
+			void monitor() {
+				totalSession.setValue(ifmt.format(monitor.totalSessionCount));
+				averageSession.setValue(dfmt.format(monitor.averageSessionCount));
+				activeSession.setValue(ifmt.format(monitor.activeSessionCount));
+		
+				totalDesktop.setValue(ifmt.format(monitor.totalDesktopCount));
+				averageDesktop.setValue(dfmt.format(monitor.averageDesktopCount));
+				activeDesktop.setValue(ifmt.format(monitor.activeDesktopCount));
+		
+				totalUpdate.setValue(ifmt.format(monitor.totalUpdateCount));
+				averageUpdate.setValue(dfmt.format(monitor.averageUpdateCount));
+				activeUpdate.setValue(ifmt.format(monitor.activeUpdateCount));
+		
+				int v = (System.currentTimeMillis() - monitor.startTime) / 60000;
+				totalTime.value = "" + (v / 60) + " hours " + (v % 60) + " mins";
+		
+				now.value = new Date().toString();
+			}
+			monitor();
+		
+			startTime.value = new Date(monitor.startTime).toString();
+		</zscript>
+	    <button label="Clear Edition Cache">
+	        <attribute name="onClick">
+	            org.libx.editionbuilder.EditionCache.invalidateAll();
+	        </attribute>
+	    </button>
+	    <button label="Clear OCLC Institution Cache">
+	        <attribute name="onClick">
+	            org.libx.editionbuilder.CatalogDetector.clearOpacBaseListTable();
+	        </attribute>
+	    </button>
+	    <button label="Dump OCLC Institution Cache To Log">
+	        <attribute name="onClick">
+	            org.libx.editionbuilder.CatalogDetector.dumpOpacBaseListTable();
+	        </attribute>
+	    </button>
+	</vbox>
+</zk>

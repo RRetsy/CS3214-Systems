@@ -1,0 +1,45 @@
+<window title="Listbox Demo" 
+    xmlns:a="http://www.zkoss.org/2005/zk/annotation" 
+    xmlns:html="http://www.w3.org/1999/xhtml">
+
+Demo for listbox with live model.
+
+<listbox id="lbox" mold="select">
+  <attribute name="onSelect">
+    AppModelItem item = lbox.getSelectedItem().getValue();
+    Messagebox.show("you selected AppModelItem with code " + item.code);
+  </attribute>
+</listbox>
+
+<button label="Add choice">
+  <attribute name="onClick">
+    // change the list model, this is reflected in list immediately
+    liveListModel.add(new AppModelItem("yellow", 4));
+  </attribute>
+</button>
+
+<zscript>
+    import org.zkoss.zul.*;
+
+    class AppModelItem {
+        String label;
+        int code;
+        AppModelItem(String label, int code) { 
+            this.label = label; 
+            this.code = code;
+        }
+
+        // for display to uer:
+        public String toString() { return "toString was called: " + this.label + " code=" + this.code; }
+    }
+
+    liveListModel = new ListModelList(new AppModelItem [] { 
+        new AppModelItem("red", 1), 
+        new AppModelItem("green", 2), 
+        new AppModelItem("blue", 3)
+    });
+    lbox.setModel(liveListModel);
+
+</zscript>
+</window>
+

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml" xmlns:js="http://www.zkoss.org/2005/zk/client">
+	<vbox hflex="1" sclass="mainbox">
+		<hbox hflex="1" sclass="level1box">
+    		Configure the OpenURL resolvers configured in your edition.
+  		    You may configure as many OpenURL resolvers as you like.
+			To change the order in which the OpenURL resolvers appear in your edition,
+		    drag and drop the OpenURL entries in the desired position.
+		</hbox>
+
+	    <hbox hflex="1" id="openurlController" use="org.libx.editionbuilder.OpenUrlTabsController" 
+	    	style="table-layout:fixed">
+	        <vbox hflex="3">
+                <vbox hflex="1" sclass="level2box">
+                    If you know the settings of the OpenURL resolver you want to add,
+                    add a new resolver and fill out the form to the right.
+                    <button label="Add New OpenURL Resolver" onClick="openurlController.addResolver();" />
+                </vbox>
+
+				<separator hflex="1" />
+                <vbox id="resolverTabLeftVbox" hflex="1" sclass="level2box">
+                    <html:a target="_new" href="http://www.oclc.org/productworks/urlresolver.htm">
+                    OCLC OpenURL Resolver Registry</html:a> by IP address or hostname.
+                    For instance, try entering www.lib.vt.edu or 128.173.124.81
+                    <textbox id="openurlIpAddr" 
+                    	js:onKeyDown="fireSubmitOnEnter(event,this.$f('openurlIpAddr'),this.$f('searchRegistry'));" 
+                    />
+                    <button label="Search OCLC Registry" id="searchRegistry" onClick="openurlController.searchRegistry(openurlIpAddr.value);" />
+                    <label id="openurlError" />
+                    <!-- the auto-detection will add entries here -->
+                </vbox>
+	        </vbox>
+
+			<separator orient="vertical" />
+	    	<vbox hflex="7">
+		    	<vbox hflex="1" id="resolverList" 
+		        	use="org.libx.editionbuilder.OpenUrlTabsController$ResolverList" sclass="level2box" style="table-layout:fixed" />
+	        </vbox>
+	 	</hbox>
+ 	</vbox>
+    <zscript>
+   		openurlController.initialize(resolverTabLeftVbox, resolverList, openurlError);
+	</zscript>
+</zk>

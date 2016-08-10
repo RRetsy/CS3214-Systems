@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+Display list of all editions.
+
+$Id$
+
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml" xmlns:js="http://www.zkoss.org/2005/zk/client">
+	<vbox hflex="1" sclass="mainbox">
+  		<hbox hflex="1">
+            <vbox hflex="1" sclass="level1box">
+            	<html:b>Search or browse public LibX editions.</html:b>
+            	<hbox hflex="1">
+                    Search by name or description:
+                    <textbox id="allListSearch" 
+                        js:onKeyDown="fireSubmitOnEnter(event,this.$f('allListSearch'),this.$f('allListSearchButton'));" />
+                    <button id="allListSearchButton" label="Search" 
+                            onClick="allListBox.search(allListSearch.value);" />
+                    <html id="allListSearchResults" />
+            	</hbox>
+        	</vbox>
+
+      		<separator orient="vertical" />
+      		<vbox hflex="1" sclass="level1box">
+                <html:div width="100%">
+                    <button style="float:right" 
+                        id="newEditionLoad" label="Build A New Edition" height="50px" 
+        				onClick="Model.loadNewModel();" />
+                    <html:b>Build a new LibX edition from scratch.</html:b><html:br />
+	      			You can also go ahead and build your own edition from scratch.
+                </html:div>
+		  	</vbox>
+    	</hbox>
+
+        <separator hflex="1" />
+        <vbox hflex="1" sclass="level2box">
+    		<listbox hflex="1" id="allListBox" use="org.libx.editionbuilder.AllEditionsListBoxController">
+   		   		<listhead sizable="true">
+                <listheader width="25px" /><!-- used for icon -->
+                <listheader width="125px" label="Id" />
+                <listheader width="80px" label="Version" />
+                <listheader width="125px" label="Date" />
+                <listheader hflex="1" label="Edition Description" />
+     			</listhead>
+			</listbox>
+			<paging id="allListPaging" pageSize="20" />
+		</vbox>
+
+		If you believe you should be the maintainer of an edition, register your email
+      	address in the "My Editions" Tab first, then select the edition and request
+        ownership.  When using the edition builder, do not use the browser's reload,
+        forward or back button. Please also disable popup blockers for this site before using it.
+
+		<!--
+    		<button label="Refresh" onClick="allListBox.refresh();" />
+		-->
+		<separator hflex="1" />
+		<hbox sclass="level2box" hflex="1" visible="false" id="allListSelectedEditionInfo">
+			<!-- AllEditionsListBoxController places information about currently selected edition here -->
+    	</hbox>
+	</vbox>
+</zk>
+<!-- vim: sw=2
+-->

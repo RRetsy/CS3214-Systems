@@ -1,0 +1,166 @@
+<p>
+<i>A general request: </i>
+Our goal is to produce software that works flawlessly.
+We look at our logs and fix any problems we see, but not all problems
+are logged.  So if something doesn't work, complain!  Send email or
+use the "Help Me" feature.
+<p>
+2010/8/5:<br />
+    Major maintenance update. Update to ZK 5.0 CE, a more recent version of ZK.
+    Better support for resizing the browser window. Support for Primo and Summon.
+    Auto-detect Bookmarklet for VUfind.
+    Can now search by catalog name in auto-detect box, not just URL.
+    Remove 3Dish boxes for cleaner and easier-to-maintain design.
+<p>
+2010/2/11:<br />
+    Changed Searchbox in "All Editions" Tab to support searching by
+    either edition id or description.
+<p>
+2009/2/6:<br />
+    Fixed OCLC Worldcat registry - IP autodetection and Worldcat Registry Search should work again.
+<p>
+2008/10/24:<br />
+    Implemented support for Talis Prism 2.x catalogs.
+<p>
+2008/10/22:<br />
+    Implemented support for Voyager 7.0 catalogs.
+<p>
+2008/10/04:<br />
+    Implemented support Evergreen, Worldcat, and Vubis catalogs.
+    Improved auto-detection by adding support for cookies (edition builder now
+    accepts and presents cookies --- but keep in mind that during auto-detection,
+    the edition builder is seen as a Virginia Tech user)
+<p>
+2008/06/13:<br />
+    Implemented preferences for context menu.
+
+<p>
+2008/06/07:<br />
+    Internally updated to ZK framework 3.0.5.
+    Added "Cue Management" tab.  The JavaScript code to support this tab's functionality
+    has not been released, however.
+    Various minor cosmetic fixes and added consistency checks.
+
+<p>
+2008/04/30:<br />
+        Add option to bundle auxiliary DLLs into LibX IE Installer.
+        Please use only if truly needed, since every build will take up
+        several MB on our server.
+<p>
+2008/04/27:<br />
+        Fixed options settings for Millennium -- you should now be able
+        to use all indices as configured by your system 
+        by providing their code (e.g., 'm', 'd', etc.).
+<p>
+2008/04/25:<br />
+        New Beta of LibX IE - cues should work now, except for auto-linking.
+        Fixed broken LibX IE update feature.
+<p>
+2008/03/20:<br />
+        Fixed broken layout when long URLs are probed.
+        Implemented secure updates for FX3 and marked LibX as compatible with it.
+        Tested on XP, Vista, Linux.  Has layout issues on MacOSX, to be addressed.
+        <p>
+        Starting FX3 while old version is installed triggers
+        <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=424107" target="_new">Bug 424107</a> in FF 3.0b4.  Firefox developers say this is a blocking bug, so it should be fixed 
+        before FX3 final. 
+<p>
+2008/03/19:<br />
+<ul>
+        <li>First draft at support for Firefox 3/FX3. 
+            Tested with FF3.0b4. Installing in FX3 should
+            work, as do manual updates.</li>
+        <li>Changed logic for "Build Revision" button.  It is now always displayed, 
+            but shows an error if no testing revision exists.</li>
+        <li>Added support for posting to CiteULike.</li>
+        <li>Improved auto-detection (should now handle if &lt;button&gt; elements.)</li>
+        <li>Added consistency checks to help set up EZProxy.</li>
+</ul>
+<p>
+2008/03/11:<br />
+        Added support for POST for Bookmarklets.
+        <p>
+        Added ability to detect Sirsi 'path' parameter.
+        Fixed crash that occurred when Open Search descriptions included
+        embedded image data.
+<p>
+2008/02/29:<br />
+<ul>
+        <li>
+        Internal rewrite and substantial updates to auto-detection functionality.
+        In particular, bookmarklets should now be detected on all pages with "GET"
+        submission forms.  It is now possible to enter entire URLs instead of just
+        hostnames.
+        </li>
+        <li>
+        If catalog pages provided "shortcut icon" &lt;link&gt; elements, 
+        offer import of images associated with catalogs.
+        </li>
+        <li>
+        Support for Endeca detection.
+        </li>
+</ul>
+<p>
+2008/02/10:<br />
+        Augmented edition consistency check.  A frequent mistake appears to be for
+        people to not configure any catalogs.  Show a warning when that happens.
+        <br />
+        Rearranged the "Edition Is Public"/"Edition Is Endorsed" buttons in "My Editions"
+        tab.  Added stronger warning to not make editions public until they are ready.
+<p>
+2008/02/07:<br />
+        New IE Beta (includes COinS support in IE).
+        Changed catalog detection (mostly internal changes, but let us know if things broke.)
+        Support for a cue icon setting separate from edition icon.
+        Support for per-catalog icons.
+<p>
+2008/02/01:<br />
+        Added catalog detection for Horizon catalog; also now showing visual
+        indication of progress.  Keep in mind that auto-detection is still
+        only a 
+        <a href="http://libx.org/editionbuilderfaq.html#oclcprofile" target="_new">heuristics.</a>
+<p>
+2008/01/30:<br />
+        Added explanation entry regarding OCLC Worldcat registry search and auto-detection facilities
+        to <a href="http://libx.org/editionbuilderfaq.html#oclcprofile" target="_new">Edition Builder FAQ.</a>
+        Please read if you're wondering about how these facilities work.
+<p>
+2008/01/29:<br />
+        Fixed Runtime exception when empty code was entered or when search option was removed.
+<p>
+2008/01/29:<br />
+        Fixed false positives in auto-detection of Voyager catalogs.
+<p>
+2008/01/25:<br />
+        Fixed "Ill-formed chrome path" exception that prevented cloning of or working
+        on legacy editions that contained http:// paths in their options.
+        Please send us email or use the send help feature should such exceptions
+        still appear.
+<p>
+2008/01/20:<br />
+        Added more consistency checks for catalogs.
+        For instance, if the edition builder detects the URL will not work,
+        a warning will appear.
+<p>
+2007/12/07: we performed a number of updates to the Edition Builder. 
+<ul>
+
+<li>
+        Options can now be selected via a panel.        
+</li>
+<li>
+        Improved Help Box.
+</li>
+<li>
+        OCLC Worldcat Registry search.  Only useful if your institution has at least one
+        well-maintained OCLC profile.
+        Note that the OCLC Worldcat Registry does not contain a full set of instructions
+        on how to search your catalog, or even who your catalog vendor is.  
+        We use it only to initiate a probe of your catalog.
+</li>
+<li>
+        This announcement panel.
+</li>
+
+<ul>
+<p>

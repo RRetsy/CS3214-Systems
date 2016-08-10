@@ -1,0 +1,4 @@
+uname-uname.o uname-uname.o: ../../coreutils-8.13/src/uname-uname.c \
+  ../../coreutils-8.13/src/uname.h
+
+../../coreutils-8.13/src/uname.h:

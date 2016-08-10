@@ -1,0 +1,95 @@
+1.
+		PID		PPID	PGID	STAT
+dpipe	18852	18784	18852	S
+wc		18854	18852	18852	S
+gnetcat	18855	18852	18852	S
+
+All three of these processes are in the interruptable sleep state; they
+are waiting for an event to complete (gnetcat to be called again).
+
+File Descriptor		dpipe		wc			gnetcat
+(stdin) 0		/dev/pts/120	pipe:[2086923711]	pipe:[2086923710]
+(stdout) 1		/dev/pts/120	pipe:[2086933710]	pipe:[2086923711]
+(stderr) 2		/dev/pts/120	/dev/pts/120		/dev/pts/120
+		3			N/O		N/O			socket:[2086923714]
+
+2.
+a)	dpipe:
+	close(3)                                = 0
+	close(3)                                = 0
+	pipe([3, 4])                            = 0
+	pipe([5, 6])                            = 0
+	clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x2abda648ddf0) = 18099
+	clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x2abda648ddf0) = 18100
+	close(3)                                = 0
+	close(5)                                = 0
+	close(4)                                = 0
+	close(6)                                = 0
+	wait4(-1, NULL, 0, NULL) = 18100
+	--- SIGCHLD (Child exited) @ 0 (0) ---
+	wait4(-1, NULL, 0, NULL) = 18099
+	--- SIGCHLD (Child exited) @ 0 (0) ---
+	exit_group(0)                           = ?
+	
+b)	wc:
+	write(1, "Starting wc:\n", 13)                                = 13
+	dup2(4, 1)                              = 1
+	dup2(5, 0)     = 0
+	close(3)                              = 0
+	close(4)                              = 0
+	close(5)                                = 0
+	close(6)                                = 0
+	execve("/usr/lib64/qt-3.3/bin/wc", ["wc"], [/* 36 vars */])                                = -1 ENOENT (No such file or directory)
+	execve("/usr/local/lf9562/bin/wc", ["wc"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/local/bin/wc", ["wc"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/bin/wc", ["wc"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/bin/wc", ["wc"], [/* 36 vars */]) = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	write(1, "     41      73    2024\n", 24) = 24
+	close(0) = 0
+	close(1)                                = 0
+	close(2)                                = 0
+
+c)	gnetcat:
+	write(1, "Starting gnetcat:\n", 18) = 18
+	dup2(3, 0) = 0
+	dup2(6, 1) = 1
+	close(3) = 0
+	close(4) = 0
+	close(5) = 0
+	close(6) = 0
+	execve("/usr/lib64/qt-3.3/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/local/lf9562/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/local/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/local/sbin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/usr/sbin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/sbin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/opt/dell/srvadmin/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/home/ugrads/majors/elobeto/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/home/ugrads/majors/elobeto/tmp/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("./gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = -1 ENOENT (No such file or directory)
+	execve("/home/courses/cs3214/bin/gnetcat", ["gnetcat", "-l", "14639"], [/* 36 vars */]) = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(3)                                = 0
+	close(4)                                = 0
+	close(3)                                = 0
+	write(1, "root:x:0:0:root:/root:/bin/bash\n"..., 2024) = 2024
+	close(1)                                = 0
+	write(4, "     41      73    2024\n", 24)                                = 24
+
+d)	Dpipe is in the sleep state since it is waiting for the two child processes, wc and 
+	gnetcat to complete. Wc is in the sleep state as well since it is waiting for the output
+	of gnetcat which is also in the sleep state since it is waiting for the input from the
+	connected client. Essentially, all three processes are in the sleep state waiting
+	for the client to connect and gnetcat to complete.
+      

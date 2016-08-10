@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Support for Tobias's feeds.
+-->
+<zk xmlns:html="http://www.w3.org/1999/xhtml">
+    <vbox hflex="1" sclass="mainbox">
+        <hbox hflex="1" sclass="level1box">
+            <html:div>
+                <html:b>This tab is currently for advanced users only.</html:b>
+                It allows you to add custom JavaScript code that can implemented cues
+                or other localization functionality.
+                To control which cues your user are seeing,
+                you can provide a location from which your users will
+                retrieve the JavaScript program code for their cues.
+                <!--
+                To learn more about feeds, read this
+                <html:a href="javascript:alert('write me');">tutorial.</html:a>
+                <html:br />
+                You may also specify a whitelist against which
+                all feeds URLs will be checked.
+                -->
+            </html:div>
+        </hbox>
+
+        <vbox hflex="1" sclass="level2box">
+            <checkbox id="haveFeeds" label="Configure Cues" />
+
+            <vbox hflex="1" id="feedBox" visible="false">
+                <!-- hide the white list for now until implemented -->
+                <hbox id="whiteListBox" hflex="1" visible="false" />
+                <vbox id="feedList" hflex="1" />
+                <button label="Add New Root Feed" onClick="feedController.newFeed()" />
+                <button label="Add Default Root Feed" onClick="feedController.addDefaultRootFeed()" />
+                <vbox id="feedBottomBox" />
+            </vbox>
+        </vbox>
+
+        <zscript>
+            feedController = new org.libx.editionbuilder.FeedController(
+                haveFeeds, feedBox, whiteListBox, feedList, feedBottomBox);
+        </zscript>
+    </vbox>
+</zk>

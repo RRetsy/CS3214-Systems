@@ -1,0 +1,15 @@
+
+This heapdump is from a J2EE application.
+
+I also included a snapshot of the source code.
+
+The system ran out of memory when a different tier failed - in this case, the XML BaseX server
+to which it was connected experienced an error.
+
+Find out why it ran out of memory, and suggest a way to fix it.
+
+Hint:
+
+Recall how Java's automatically expands buffers in certain JDK classes.
+Either consult JDK sources, or deduce based on their semantics.
+
